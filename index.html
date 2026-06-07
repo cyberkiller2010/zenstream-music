@@ -85,15 +85,15 @@
 <div id="authModal" class="auth-modal"><div class="auth-card"><h3 id="authTitle">Sign in to upload</h3><input type="email" id="emailInput" placeholder="Email address"><input type="password" id="passwordInput" placeholder="Password"><button id="authSubmitBtn" class="btn-primary">Sign in</button><div class="toggle-auth" id="toggleAuthMode">Don't have an account? Sign up</div><div class="toggle-auth" id="closeAuthModal">Cancel</div></div></div>
 
 <script>
-// FIREBASE CONFIG (Your Project)
+// FIREBASE CONFIG
 const firebaseConfig = { apiKey: "AIzaSyALqMaRLvPz_S6v_UWKVaWl0Yod701lsUI", authDomain: "projectrunaway2010.firebaseapp.com", projectId: "projectrunaway2010", storageBucket: "projectrunaway2010.firebasestorage.app", messagingSenderId: "797776068841", appId: "1:797776068841:web:80e2c95800a71ff383b078" };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// CLOUDINARY CONFIG
+// CLOUDINARY CONFIG - UPDATED WITH YOUR PRESET NAME
 const CLOUD_NAME = "djyuhmqeb";
-const UPLOAD_PRESET = "music_uploads"; // IMPORTANT: Create this exact preset in Cloudinary (unsigned)
+const UPLOAD_PRESET = "Zenskm music";  // ← Updated to your preset name
 
 // --- GLOBAL VARIABLES ---
 let allSongs = [];
