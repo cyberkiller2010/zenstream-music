@@ -1,12 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>ZenStream | Search, Listen & Share</title>
+  <title>ZenStream | Music & Video Sharing</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -266,6 +265,8 @@
       justify-content: space-between;
       margin-bottom: 0.5rem;
       font-size: 0.8rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
     .delete-song-btn { background: #3a2a3c; border: none; color: #ffaeae; padding: 0.25rem 0.6rem; border-radius: 1.5rem; cursor: pointer; font-size: 0.7rem; }
     .modal {
@@ -342,6 +343,7 @@
       .navbar { padding: 0.6rem 1rem; }
       .pane { padding: 1rem; }
       .cards-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+      .nav-btn { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -361,7 +363,7 @@
     <div class="search-section">
       <div class="search-wrapper">
         <i class="fas fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Search by title, artist, or any keyword..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Search by title or artist..." autocomplete="off">
         <button class="clear-search" id="clearHomeSearch"><i class="fas fa-times-circle"></i></button>
       </div>
       <div id="suggestionsBox" class="suggestions-box"></div>
@@ -420,7 +422,7 @@
     <button id="playerNext" style="background:none; border:none; color:white;"><i class="fas fa-forward-step"></i></button>
     <div style="display:flex; gap:4px; align-items:center; width:140px;">
       <span id="playerCurrentTime" style="font-size:0.7rem;">0:00</span>
-      <div class="progress-bar" style="flex:1; height:3px; background:#2e3460;"><div id="playerProgressFill" style="height:100%; width:0%; background:#8b92e8;"></div></div>
+      <div class="progress-bar" style="flex:1; height:3px; background:#2e3460; cursor:pointer;"><div id="playerProgressFill" style="height:100%; width:0%; background:#8b92e8;"></div></div>
       <span id="playerDuration" style="font-size:0.7rem;">0:00</span>
     </div>
     <i class="fas fa-volume-down" style="font-size:0.8rem;"></i><input type="range" id="playerVolume" min="0" max="1" step="0.01" value="0.7" style="width:60px;">
@@ -440,7 +442,7 @@
 </div>
 
 <script>
-  // ---------- FIREBASE CONFIG ----------
+  // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyALqMaRLvPz_S6v_UWKVaWl0Yod701lsUI",
     authDomain: "projectrunaway2010.firebaseapp.com",
@@ -453,9 +455,9 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ---------- CLOUDINARY ----------
+  // Cloudinary
   const CLOUD_NAME = "djyuhmqeb";
-  const UPLOAD_PRESET = "music_uploads"; // Create unsigned preset in Cloudinary
+  const UPLOAD_PRESET = "music_uploads";
 
   let allSongs = [];
   let audioElement = new Audio();
@@ -466,6 +468,7 @@
   let currentFilter = "all";
   let currentSearch = "";
 
+  // DOM Elements
   const homePane = document.getElementById('homePane');
   const profilePane = document.getElementById('profilePane');
   const homeBtn = document.getElementById('homeNavBtn');
@@ -475,8 +478,9 @@
   const filteredGrid = document.getElementById('filteredGrid');
   const searchInput = document.getElementById('searchInput');
   const suggestionsBox = document.getElementById('suggestionsBox');
+  const clearSearch = document.getElementById('clearHomeSearch');
 
-  // Auth modal
+  // Auth Modal
   const authModal = document.getElementById('authModal');
   const authTitle = document.getElementById('authTitle');
   const emailInput = document.getElementById('emailInput');
@@ -508,7 +512,6 @@
     return `${m}:${s.toString().padStart(2,'0')}`;
   }
 
-  // Upload to Cloudinary
   async function uploadToCloudinary(file) {
     const formData = new FormData();
     formData.append('file', file);
@@ -523,7 +526,27 @@
     return data.secure_url;
   }
 
-  // Authentication
+  // Navigation - FIXED
+  function setActivePane(pane) {
+    if (pane === 'home') {
+      homePane.classList.add('active-pane');
+      profilePane.classList.remove('active-pane');
+      homeBtn.classList.add('active');
+      profileBtn.classList.remove('active');
+      renderHome();
+    } else {
+      profilePane.classList.add('active-pane');
+      homePane.classList.remove('active-pane');
+      profileBtn.classList.add('active');
+      homeBtn.classList.remove('active');
+      renderProfileUploads();
+    }
+  }
+
+  homeBtn.addEventListener('click', () => setActivePane('home'));
+  profileBtn.addEventListener('click', () => setActivePane('profile'));
+
+  // Auth
   function openAuthModal() { authModal.classList.add('active'); }
   function closeAuthModalFunc() {
     authModal.classList.remove('active');
@@ -574,64 +597,14 @@
     await songRef.update({ playCount: firebase.firestore.FieldValue.increment(1) });
   }
 
-  // Search that works on partial matches (title, artist, or any part)
-  function filterSongsBySearch(songs, term) {
-    if (!term.trim()) return songs;
-    const lowerTerm = term.toLowerCase();
-    return songs.filter(s => 
-      s.title.toLowerCase().includes(lowerTerm) || 
-      s.artist.toLowerCase().includes(lowerTerm)
-    );
-  }
-
-  function getSuggestions(term) {
-    if (!term.trim()) return [];
-    const lowerTerm = term.toLowerCase();
-    const matches = allSongs.filter(s => 
-      s.title.toLowerCase().includes(lowerTerm) || 
-      s.artist.toLowerCase().includes(lowerTerm)
-    );
-    const seen = new Set();
-    const suggestions = [];
-    for (const s of matches) {
-      if (!seen.has(s.title)) {
-        seen.add(s.title);
-        suggestions.push({ title: s.title, artist: s.artist });
-      }
-      if (suggestions.length >= 6) break;
-    }
-    return suggestions;
-  }
-
-  function updateSuggestions() {
-    const term = searchInput.value;
-    const suggestions = getSuggestions(term);
-    if (!suggestions.length) {
-      suggestionsBox.style.display = 'none';
-      return;
-    }
-    suggestionsBox.innerHTML = suggestions.map(s => `
-      <div class="suggestion-item" data-search="${escapeHtml(s.title)}">
-        <i class="fas fa-music"></i> ${escapeHtml(s.title)} — ${escapeHtml(s.artist)}
-      </div>
-    `).join('');
-    suggestionsBox.style.display = 'block';
-    document.querySelectorAll('.suggestion-item').forEach(el => {
-      el.addEventListener('click', () => {
-        const val = el.getAttribute('data-search');
-        searchInput.value = val;
-        currentSearch = val;
-        renderHome();
-        suggestionsBox.style.display = 'none';
-      });
-    });
-  }
-
   function renderHome() {
     let filtered = allSongs;
     if (currentFilter === 'audio') filtered = allSongs.filter(s => s.mediaType === 'audio');
     else if (currentFilter === 'video') filtered = allSongs.filter(s => s.mediaType === 'video');
-    filtered = filterSongsBySearch(filtered, currentSearch);
+    if (currentSearch.trim()) {
+      const term = currentSearch.toLowerCase();
+      filtered = filtered.filter(s => s.title.toLowerCase().includes(term) || s.artist.toLowerCase().includes(term));
+    }
     const trending = [...allSongs].sort((a,b) => (b.playCount||0) - (a.playCount||0)).slice(0,6);
     trendingGrid.innerHTML = trending.map(createSongCard).join('');
     filteredGrid.innerHTML = filtered.map(createSongCard).join('');
@@ -687,7 +660,6 @@
     });
   }
 
-  // Audio player
   function playAudio(song) {
     if (currentSongId === song.id && !audioElement.paused) return;
     currentSongId = song.id;
@@ -751,4 +723,21 @@
     modal.style.display = 'flex';
     video.play();
   }
-  document.querySelector('.close-modal').
+  document.querySelector('.close-modal').onclick = () => {
+    document.getElementById('videoModal').style.display = 'none';
+    document.getElementById('modalVideo').pause();
+  };
+
+  async function renderProfileUploads() {
+    if (!currentUser) {
+      document.getElementById('myUploadsList').innerHTML = '<div class="empty-msg">Sign in to see your uploads.</div>';
+      return;
+    }
+    const snapshot = await db.collection('songs').where('userId', '==', currentUser.uid).get();
+    const mySongs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const container = document.getElementById('myUploadsList');
+    if (!mySongs.length) {
+      container.innerHTML = '<div class="empty-msg">You haven\'t uploaded anything yet.</div>';
+      return;
+    }
+    container.innerHTML = mySongs.map(song =>﻿
