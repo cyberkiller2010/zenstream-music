@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,135 +11,32 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 10% 20%, #0a0c18, #020308);
-      color: #edeef2;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-    .app {
-      max-width: 1400px;
-      margin: 0 auto;
-      background: rgba(12, 14, 28, 0.7);
-      backdrop-filter: blur(18px);
-      border-radius: 2rem;
-      box-shadow: 0 25px 45px -12px rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.08);
-      overflow: hidden;
-    }
+    body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 20%, #0a0c18, #020308); color: #edeef2; min-height: 100vh; padding: 1rem; }
+    .app { max-width: 1400px; margin: 0 auto; background: rgba(12, 14, 28, 0.7); backdrop-filter: blur(18px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
     .progress-container { width: 100%; height: 4px; background: #2a2e50; display: none; }
     .upload-progress { width: 0%; height: 100%; background: linear-gradient(90deg, #8b92e8, #6c5ce7); transition: width 0.2s; }
-    .navbar {
-      padding: 0.8rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      background: rgba(6, 8, 16, 0.7);
-    }
+    .navbar { padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(6, 8, 16, 0.7); }
     .logo h1 { font-size: 1.5rem; background: linear-gradient(135deg, #fff, #b7b2ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .logo span { font-size: 0.65rem; color: #9da3d4; display: block; }
     .nav-links { display: flex; gap: 0.8rem; align-items: center; }
-    .nav-btn {
-      background: transparent;
-      border: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #cfd5ff;
-      cursor: pointer;
-      padding: 0.4rem 1rem;
-      border-radius: 2rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-    }
+    .nav-btn { background: transparent; border: none; font-size: 0.9rem; font-weight: 500; color: #cfd5ff; cursor: pointer; padding: 0.4rem 1rem; border-radius: 2rem; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
     .nav-btn.active, .nav-btn:hover { background: #6c5ce7; color: white; }
-    .auth-btn {
-      background: #2d325a;
-      padding: 0.35rem 1rem;
-      border-radius: 2rem;
-      border: none;
-      color: white;
-      cursor: pointer;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .auth-btn { background: #2d325a; padding: 0.35rem 1rem; border-radius: 2rem; border: none; color: white; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
     .pane { display: none; padding: 1.5rem; animation: fade 0.2s ease; }
     .pane.active-pane { display: block; }
     @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-    .filter-tabs {
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid #2a2e50;
-      padding-bottom: 0.4rem;
-    }
-    .filter-btn {
-      background: none;
-      border: none;
-      color: #b7bef0;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      padding: 0.25rem 0.8rem;
-      border-radius: 2rem;
-    }
+    .filter-tabs { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; border-bottom: 1px solid #2a2e50; padding-bottom: 0.4rem; }
+    .filter-btn { background: none; border: none; color: #b7bef0; font-size: 0.9rem; font-weight: 500; cursor: pointer; padding: 0.25rem 0.8rem; border-radius: 2rem; }
     .filter-btn.active-filter { background: #6c5ce7; color: white; }
     .search-section { margin-bottom: 1.5rem; position: relative; }
-    .search-wrapper {
-      display: flex;
-      gap: 0.5rem;
-      background: #181c30b3;
-      border-radius: 2rem;
-      align-items: center;
-      padding: 0.1rem 0.3rem 0.1rem 1rem;
-      height: 34px;
-    }
+    .search-wrapper { display: flex; gap: 0.5rem; background: #181c30b3; border-radius: 2rem; align-items: center; padding: 0.1rem 0.3rem 0.1rem 1rem; height: 34px; }
     .search-wrapper i { color: #9ca3e0; font-size: 0.8rem; }
-    #searchInput {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 0.2rem 0;
-      color: white;
-      font-size: 0.85rem;
-      outline: none;
-    }
-    .suggestions-box {
-      position: absolute;
-      top: 40px;
-      left: 0;
-      width: 100%;
-      background: #12142ad9;
-      backdrop-filter: blur(12px);
-      border-radius: 1rem;
-      max-height: 250px;
-      overflow-y: auto;
-      z-index: 100;
-      border: 1px solid #3d4270;
-      display: none;
-    }
+    #searchInput { flex: 1; background: transparent; border: none; padding: 0.2rem 0; color: white; font-size: 0.85rem; outline: none; }
+    .suggestions-box { position: absolute; top: 40px; left: 0; width: 100%; background: #12142ad9; backdrop-filter: blur(12px); border-radius: 1rem; max-height: 250px; overflow-y: auto; z-index: 100; border: 1px solid #3d4270; display: none; }
     .suggestion-item { padding: 0.6rem 1rem; cursor: pointer; border-bottom: 1px solid #2a2e55; font-size: 0.85rem; }
     .suggestion-item:hover { background: #2d325b; }
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1.2rem;
-      margin-bottom: 1.5rem;
-    }
-    .song-card {
-      background: rgba(24, 27, 52, 0.8);
-      border-radius: 1rem;
-      overflow: hidden;
-      transition: 0.2s;
-      cursor: pointer;
-    }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
+    .song-card { background: rgba(24, 27, 52, 0.8); border-radius: 1rem; overflow: hidden; transition: 0.2s; cursor: pointer; }
     .song-card:hover { transform: translateY(-4px); background: #2d325b; }
     .cover-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #1e213f; }
     .card-info { padding: 0.7rem; }
@@ -148,29 +44,8 @@
     .song-artist { font-size: 0.7rem; color: #b6bdf0; margin: 3px 0; }
     .card-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.65rem; }
     .watch-btn, .download-btn { background: none; border: none; color: #cfd6ff; cursor: pointer; padding: 3px 6px; border-radius: 20px; font-size: 0.7rem; }
-    .watch-btn:hover, .download-btn:hover { background: #3d4270; }
-    .upload-trigger {
-      background: #6c5ce7;
-      border: none;
-      padding: 0.6rem 1.5rem;
-      border-radius: 2.5rem;
-      font-weight: 600;
-      color: white;
-      cursor: pointer;
-      margin-bottom: 1.2rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-    }
-    .wizard-step {
-      background: rgba(20, 22, 44, 0.9);
-      border-radius: 1.2rem;
-      padding: 1.2rem;
-      margin-bottom: 1.5rem;
-      border: 1px solid #4a4f82;
-      display: none;
-    }
+    .upload-trigger { background: #6c5ce7; border: none; padding: 0.6rem 1.5rem; border-radius: 2.5rem; font-weight: 600; color: white; cursor: pointer; margin-bottom: 1.2rem; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+    .wizard-step { background: rgba(20, 22, 44, 0.9); border-radius: 1.2rem; padding: 1.2rem; margin-bottom: 1.5rem; border: 1px solid #4a4f82; display: none; }
     .wizard-step.active-step { display: block; }
     .form-group { margin-bottom: 0.8rem; display: flex; flex-direction: column; gap: 5px; }
     .form-group label { font-weight: 500; font-size: 0.85rem; }
@@ -178,7 +53,6 @@
     .btn-primary { background: #6c5ce7; border: none; padding: 0.6rem 1rem; border-radius: 2rem; font-weight: 600; color: white; cursor: pointer; font-size: 0.85rem; }
     .media-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 0.8rem 0; }
     .media-picker-btn { flex: 1; background: #2d325a; border: none; padding: 0.6rem 0.8rem; border-radius: 2rem; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; }
-    .media-picker-btn:hover { background: #6c5ce7; }
     .review-details { background: #181c30; border-radius: 1rem; padding: 0.8rem; margin: 0.8rem 0; font-size: 0.8rem; }
     .review-item { display: flex; gap: 0.8rem; margin-bottom: 0.5rem; align-items: center; }
     .cover-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 0.6rem; }
@@ -188,52 +62,16 @@
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
     .modal-content video { max-width: 90%; max-height: 80vh; border-radius: 1rem; }
     .close-modal { position: absolute; top: 20px; right: 30px; font-size: 2rem; color: white; cursor: pointer; }
-    .player-bar {
-      background: #05070fe6;
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 0.4rem 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.8rem;
-      font-size: 0.8rem;
-    }
+    .player-bar { background: #05070fe6; backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.4rem 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; font-size: 0.8rem; }
     .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1f2342; backdrop-filter: blur(16px); padding: 0.4rem 1rem; border-radius: 40px; z-index: 1100; font-size: 0.8rem; }
-    .auth-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(8px);
-      z-index: 3000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      visibility: hidden;
-      opacity: 0;
-      transition: 0.2s;
-    }
+    .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; }
     .auth-modal.active { visibility: visible; opacity: 1; }
-    .auth-card {
-      background: #14172b;
-      border-radius: 1.5rem;
-      padding: 1.5rem;
-      width: 90%;
-      max-width: 350px;
-      border: 1px solid #6c5ce7;
-    }
+    .auth-card { background: #14172b; border-radius: 1.5rem; padding: 1.5rem; width: 90%; max-width: 350px; border: 1px solid #6c5ce7; }
     .auth-card h3 { margin-bottom: 1rem; text-align: center; font-size: 1.2rem; }
     .auth-card input { width: 100%; margin-bottom: 0.8rem; padding: 0.6rem; border-radius: 1rem; background: #0a0c1a; border: 1px solid #3d4270; color: white; }
     .auth-card button { width: 100%; margin-top: 0.3rem; }
     .toggle-auth { text-align: center; margin-top: 0.8rem; font-size: 0.75rem; cursor: pointer; color: #b7b2ff; }
-    @media (max-width: 600px) {
-      .navbar { padding: 0.6rem 1rem; }
-      .pane { padding: 1rem; }
-      .cards-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-    }
+    @media (max-width: 600px) { .navbar { padding: 0.6rem 1rem; } .pane { padding: 1rem; } .cards-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
   </style>
 </head>
 <body>
@@ -277,19 +115,13 @@
     </div>
     <div id="step2" class="wizard-step">
       <p><strong>Choose media type</strong></p>
-      <div class="media-buttons">
-        <button id="audioPickerBtn" class="media-picker-btn"><i class="fas fa-music"></i> Audio</button>
-        <button id="videoPickerBtn" class="media-picker-btn"><i class="fas fa-video"></i> Video</button>
-      </div>
+      <div class="media-buttons"><button id="audioPickerBtn" class="media-picker-btn"><i class="fas fa-music"></i> Audio</button><button id="videoPickerBtn" class="media-picker-btn"><i class="fas fa-video"></i> Video</button></div>
       <div id="mediaFileInfo" style="margin-top:0.8rem;"></div>
       <button id="mediaNextBtn" class="btn-primary" style="margin-top:0.8rem;" disabled>Continue →</button>
     </div>
     <div id="step3" class="wizard-step">
       <p><strong>Cover image (optional)</strong></p>
-      <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 0.8rem 0;">
-        <button id="setCoverBtn" class="media-picker-btn" style="flex:1;"><i class="fas fa-image"></i> Set Cover</button>
-        <button id="continueNoCoverBtn" class="btn-primary">Continue without cover</button>
-      </div>
+      <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 0.8rem 0;"><button id="setCoverBtn" class="media-picker-btn" style="flex:1;"><i class="fas fa-image"></i> Set Cover</button><button id="continueNoCoverBtn" class="btn-primary">Continue without cover</button></div>
       <div id="coverInfo"></div>
       <button id="continueWithCoverBtn" class="btn-primary" style="margin-top:0.5rem;" disabled>Continue with cover</button>
     </div>
@@ -305,331 +137,111 @@
 
   <div class="player-bar" id="globalPlayer" style="display: none;">
     <span style="font-size:0.7rem;">🎵 Now</span>
-    <span id="playerTrackName" style="flex:1; font-size:0.8rem; white-space: nowrap; overflow: hidden;">—</span>
+    <span id="playerTrackName" style="flex:1; font-size:0.8rem;">—</span>
     <button id="playerPrev" style="background:none; border:none; color:white;"><i class="fas fa-backward-step"></i></button>
     <button id="playerPlayPause" style="background:#6c5ce7; border:none; width:32px; height:32px; border-radius:50%; color:white;"><i class="fas fa-play"></i></button>
     <button id="playerNext" style="background:none; border:none; color:white;"><i class="fas fa-forward-step"></i></button>
-    <div style="display:flex; gap:4px; align-items:center; width:140px;">
-      <span id="playerCurrentTime">0:00</span>
-      <div class="progress-bar" style="flex:1; height:3px; background:#2e3460; cursor:pointer;"><div id="playerProgressFill" style="height:100%; width:0%; background:#8b92e8;"></div></div>
-      <span id="playerDuration">0:00</span>
-    </div>
-    <i class="fas fa-volume-down" style="font-size:0.8rem;"></i><input type="range" id="playerVolume" min="0" max="1" step="0.01" value="0.7" style="width:60px;">
+    <div style="display:flex; gap:4px; align-items:center; width:140px;"><span id="playerCurrentTime">0:00</span><div class="progress-bar" style="flex:1; height:3px; background:#2e3460; cursor:pointer;"><div id="playerProgressFill" style="height:100%; width:0%; background:#8b92e8;"></div></div><span id="playerDuration">0:00</span></div>
+    <i class="fas fa-volume-down"></i><input type="range" id="playerVolume" min="0" max="1" step="0.01" value="0.7" style="width:60px;">
   </div>
 </div>
 <div id="videoModal" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><video id="modalVideo" controls></video></div></div>
-
-<div id="authModal" class="auth-modal">
-  <div class="auth-card">
-    <h3 id="authTitle">Sign in to upload</h3>
-    <input type="email" id="emailInput" placeholder="Email address">
-    <input type="password" id="passwordInput" placeholder="Password">
-    <button id="authSubmitBtn" class="btn-primary">Sign in</button>
-    <div class="toggle-auth" id="toggleAuthMode">Don't have an account? Sign up</div>
-    <div class="toggle-auth" id="closeAuthModal">Cancel</div>
-  </div>
-</div>
+<div id="authModal" class="auth-modal"><div class="auth-card"><h3 id="authTitle">Sign in to upload</h3><input type="email" id="emailInput" placeholder="Email address"><input type="password" id="passwordInput" placeholder="Password"><button id="authSubmitBtn" class="btn-primary">Sign in</button><div class="toggle-auth" id="toggleAuthMode">Don't have an account? Sign up</div><div class="toggle-auth" id="closeAuthModal">Cancel</div></div></div>
 
 <script>
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyALqMaRLvPz_S6v_UWKVaWl0Yod701lsUI",
-    authDomain: "projectrunaway2010.firebaseapp.com",
-    projectId: "projectrunaway2010",
-    storageBucket: "projectrunaway2010.firebasestorage.app",
-    messagingSenderId: "797776068841",
-    appId: "1:797776068841:web:80e2c95800a71ff383b078"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+const firebaseConfig = { apiKey: "AIzaSyALqMaRLvPz_S6v_UWKVaWl0Yod701lsUI", authDomain: "projectrunaway2010.firebaseapp.com", projectId: "projectrunaway2010", storageBucket: "projectrunaway2010.firebasestorage.app", messagingSenderId: "797776068841", appId: "1:797776068841:web:80e2c95800a71ff383b078" };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const CLOUD_NAME = "djyuhmqeb";
+const UPLOAD_PRESET = "music_uploads";
 
-  const CLOUD_NAME = "djyuhmqeb";
-  const UPLOAD_PRESET = "music_uploads";
+let allSongs = [], audioElement = new Audio(), currentSongId = null, audioQueue = [], audioIndex = -1, currentUser = null, currentFilter = "all", currentSearch = "";
+const homePane = document.getElementById('homePane'), profilePane = document.getElementById('profilePane'), homeBtn = document.getElementById('homeNavBtn'), profileBtn = document.getElementById('profileNavBtn'), authBtn = document.getElementById('authBtn'), trendingGrid = document.getElementById('trendingGrid'), filteredGrid = document.getElementById('filteredGrid'), searchInput = document.getElementById('searchInput'), suggestionsBox = document.getElementById('suggestionsBox');
 
-  let allSongs = [];
-  let audioElement = new Audio();
-  let currentSongId = null;
-  let audioQueue = [];
-  let audioIndex = -1;
-  let currentUser = null;
-  let currentFilter = "all";
-  let currentSearch = "";
+function showToast(msg) { let t = document.querySelector('.toast'); if (t) t.remove(); const toast = document.createElement('div'); toast.className = 'toast'; toast.innerText = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+function formatTime(sec) { if (isNaN(sec)) return "0:00"; const m = Math.floor(sec / 60), s = Math.floor(sec % 60); return `${m}:${s.toString().padStart(2,'0')}`; }
 
-  // DOM Elements
-  const homePane = document.getElementById('homePane');
-  const profilePane = document.getElementById('profilePane');
-  const homeBtn = document.getElementById('homeNavBtn');
-  const profileBtn = document.getElementById('profileNavBtn');
-  const authBtn = document.getElementById('authBtn');
-  const trendingGrid = document.getElementById('trendingGrid');
-  const filteredGrid = document.getElementById('filteredGrid');
-  const searchInput = document.getElementById('searchInput');
-  const suggestionsBox = document.getElementById('suggestionsBox');
+// Navigation
+function setActivePane(pane) {
+  if (pane === 'home') { homePane.classList.add('active-pane'); profilePane.classList.remove('active-pane'); homeBtn.classList.add('active'); profileBtn.classList.remove('active'); renderHome(); }
+  else { profilePane.classList.add('active-pane'); homePane.classList.remove('active-pane'); profileBtn.classList.add('active'); homeBtn.classList.remove('active'); renderProfileUploads(); }
+}
+homeBtn.onclick = () => setActivePane('home');
+profileBtn.onclick = () => setActivePane('profile');
 
-  function showToast(msg) {
-    let t = document.querySelector('.toast');
-    if (t) t.remove();
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerText = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
+// Auth Modal
+const authModalEl = document.getElementById('authModal'), authTitle = document.getElementById('authTitle'), emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput'), authSubmitBtn = document.getElementById('authSubmitBtn'), toggleAuthMode = document.getElementById('toggleAuthMode'), closeAuthModal = document.getElementById('closeAuthModal');
+let isSignUp = false;
+function openAuthModal() { authModalEl.classList.add('active'); }
+function closeAuthModalFunc() { authModalEl.classList.remove('active'); emailInput.value = ''; passwordInput.value = ''; }
+async function handleAuth() { const email = emailInput.value.trim(), pwd = passwordInput.value; if (!email || !pwd) { showToast('Please enter email and password'); return; } try { if (isSignUp) { await auth.createUserWithEmailAndPassword(email, pwd); showToast('Account created! You can now upload.'); } else { await auth.signInWithEmailAndPassword(email, pwd); showToast('Signed in successfully'); } closeAuthModalFunc(); } catch (err) { showToast(err.message); } }
+toggleAuthMode.onclick = () => { isSignUp = !isSignUp; authTitle.innerText = isSignUp ? 'Sign up to upload' : 'Sign in to upload'; toggleAuthMode.innerText = isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"; authSubmitBtn.innerText = isSignUp ? 'Sign up' : 'Sign in'; };
+authSubmitBtn.onclick = handleAuth;
+closeAuthModal.onclick = closeAuthModalFunc;
+authBtn.onclick = openAuthModal;
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-  }
+// Load songs
+function loadSongs() { db.collection('songs').orderBy('timestamp', 'desc').onSnapshot(snapshot => { allSongs = []; snapshot.forEach(doc => { allSongs.push({ id: doc.id, ...doc.data() }); }); renderHome(); renderProfileUploads(); }); }
+async function incrementPlayCount(songId) { const songRef = db.collection('songs').doc(songId); await songRef.update({ playCount: firebase.firestore.FieldValue.increment(1) }); }
 
-  function formatTime(sec) {
-    if (isNaN(sec)) return "0:00";
-    const m = Math.floor(sec / 60);
-    const s = Math.floor(sec % 60);
-    return `${m}:${s.toString().padStart(2,'0')}`;
-  }
+function renderHome() {
+  let filtered = allSongs;
+  if (currentFilter === 'audio') filtered = allSongs.filter(s => s.mediaType === 'audio');
+  else if (currentFilter === 'video') filtered = allSongs.filter(s => s.mediaType === 'video');
+  if (currentSearch.trim()) { const term = currentSearch.toLowerCase(); filtered = filtered.filter(s => s.title.toLowerCase().includes(term) || s.artist.toLowerCase().includes(term)); }
+  const trending = [...allSongs].sort((a,b) => (b.playCount||0) - (a.playCount||0)).slice(0,6);
+  trendingGrid.innerHTML = trending.map(s => createSongCard(s)).join('');
+  filteredGrid.innerHTML = filtered.map(s => createSongCard(s)).join('');
+  attachCardEvents();
+}
 
-  // ========== NAVIGATION ==========
-  function setActivePane(pane) {
-    if (pane === 'home') {
-      homePane.classList.add('active-pane');
-      profilePane.classList.remove('active-pane');
-      homeBtn.classList.add('active');
-      profileBtn.classList.remove('active');
-      renderHome();
-    } else {
-      profilePane.classList.add('active-pane');
-      homePane.classList.remove('active-pane');
-      profileBtn.classList.add('active');
-      homeBtn.classList.remove('active');
-      renderProfileUploads();
-    }
-  }
+function createSongCard(song) {
+  const cover = song.coverURL ? `<img class="cover-img" src="${song.coverURL}" alt="cover">` : `<div class="cover-img" style="display:flex;align-items:center;justify-content:center;background:#2a2e54;"><i class="fas fa-music" style="font-size:2rem;"></i></div>`;
+  return `<div class="song-card" data-id="${song.id}">${cover}<div class="card-info"><div class="song-title">${escapeHtml(song.title)}</div><div class="song-artist">${escapeHtml(song.artist)}</div><div class="card-stats"><span><i class="fas fa-headphones"></i> ${song.playCount || 0}</span><div><button class="watch-btn" data-id="${song.id}"><i class="fas ${song.mediaType === 'audio' ? 'fa-play-circle' : 'fa-video'}"></i> ${song.mediaType === 'audio' ? 'Play' : 'Watch'}</button><button class="download-btn" data-id="${song.id}"><i class="fas fa-download"></i></button></div></div></div></div>`;
+}
 
-  homeBtn.addEventListener('click', () => setActivePane('home'));
-  profileBtn.addEventListener('click', () => setActivePane('profile'));
+function attachCardEvents() {
+  document.querySelectorAll('.watch-btn').forEach(btn => { btn.onclick = async (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) { await incrementPlayCount(song.id); if (song.mediaType === 'audio') playAudio(song); else openVideoModal(song.mediaURL); } }; });
+  document.querySelectorAll('.download-btn').forEach(btn => { btn.onclick = (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) { const a = document.createElement('a'); a.href = song.mediaURL; a.download = `${song.title}.${song.mediaURL.split('.').pop()}`; a.click(); showToast(`Downloading ${song.title}`); } }; });
+}
 
-  // ========== AUTH ==========
-  const authModalEl = document.getElementById('authModal');
-  const authTitle = document.getElementById('authTitle');
-  const emailInput = document.getElementById('emailInput');
-  const passwordInput = document.getElementById('passwordInput');
-  const authSubmitBtn = document.getElementById('authSubmitBtn');
-  const toggleAuthMode = document.getElementById('toggleAuthMode');
-  const closeAuthModal = document.getElementById('closeAuthModal');
-  let isSignUp = false;
+function playAudio(song) { if (currentSongId === song.id && !audioElement.paused) return; currentSongId = song.id; audioElement.src = song.mediaURL; audioElement.load(); audioElement.play(); document.getElementById('globalPlayer').style.display = 'flex'; document.getElementById('playerTrackName').innerText = `${song.title} - ${song.artist}`; updatePlayPauseUI(); audioQueue = allSongs.filter(s => s.mediaType === 'audio').map(s => s.id); audioIndex = audioQueue.findIndex(id => id === song.id); }
+function updatePlayPauseUI() { const btn = document.getElementById('playerPlayPause'); btn.innerHTML = audioElement.paused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>'; }
+function setupAudioEvents() {
+  audioElement.onplay = updatePlayPauseUI;
+  audioElement.onpause = updatePlayPauseUI;
+  audioElement.ontimeupdate = () => { if (audioElement.duration) { document.getElementById('playerProgressFill').style.width = (audioElement.currentTime / audioElement.duration) * 100 + '%'; document.getElementById('playerCurrentTime').innerText = formatTime(audioElement.currentTime); } };
+  audioElement.onloadedmetadata = () => { document.getElementById('playerDuration').innerText = formatTime(audioElement.duration); };
+  audioElement.onended = () => playNextAudio();
+  document.getElementById('playerPlayPause').onclick = () => audioElement.paused ? audioElement.play() : audioElement.pause();
+  document.getElementById('playerPrev').onclick = () => playPrevAudio();
+  document.getElementById('playerNext').onclick = () => playNextAudio();
+  document.getElementById('playerVolume').oninput = (e) => audioElement.volume = e.target.value;
+  audioElement.volume = 0.7;
+  document.querySelector('#globalPlayer .progress-bar').onclick = (e) => { const rect = e.target.closest('.progress-bar').getBoundingClientRect(); const percent = (e.clientX - rect.left) / rect.width; if (audioElement.duration) audioElement.currentTime = percent * audioElement.duration; };
+}
+function playNextAudio() { if (audioQueue.length === 0) return; if (audioIndex === -1) audioIndex = 0; let nextIdx = (audioIndex + 1) % audioQueue.length; const nextSong = allSongs.find(s => s.id === audioQueue[nextIdx]); if (nextSong) playAudio(nextSong); }
+function playPrevAudio() { if (audioQueue.length === 0) return; if (audioIndex === -1) audioIndex = 0; let prevIdx = (audioIndex - 1 + audioQueue.length) % audioQueue.length; const prevSong = allSongs.find(s => s.id === audioQueue[prevIdx]); if (prevSong) playAudio(prevSong); }
+function openVideoModal(url) { const modal = document.getElementById('videoModal'); const video = document.getElementById('modalVideo'); video.src = url; modal.style.display = 'flex'; video.play(); }
+document.querySelector('.close-modal').onclick = () => { document.getElementById('videoModal').style.display = 'none'; document.getElementById('modalVideo').pause(); };
 
-  function openAuthModal() { authModalEl.classList.add('active'); }
-  function closeAuthModalFunc() {
-    authModalEl.classList.remove('active');
-    emailInput.value = '';
-    passwordInput.value = '';
-  }
-  async function handleAuth() {
-    const email = emailInput.value.trim();
-    const pwd = passwordInput.value;
-    if (!email || !pwd) { showToast('Please enter email and password'); return; }
-    try {
-      if (isSignUp) {
-        await auth.createUserWithEmailAndPassword(email, pwd);
-        showToast('Account created! You can now upload.');
-      } else {
-        await auth.signInWithEmailAndPassword(email, pwd);
-        showToast('Signed in successfully');
-      }
-      closeAuthModalFunc();
-    } catch (err) {
-      showToast(err.message);
-    }
-  }
-  toggleAuthMode.addEventListener('click', () => {
-    isSignUp = !isSignUp;
-    authTitle.innerText = isSignUp ? 'Sign up to upload' : 'Sign in to upload';
-    toggleAuthMode.innerText = isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up";
-    authSubmitBtn.innerText = isSignUp ? 'Sign up' : 'Sign in';
-  });
-  authSubmitBtn.addEventListener('click', handleAuth);
-  closeAuthModal.addEventListener('click', closeAuthModalFunc);
-  authBtn.addEventListener('click', openAuthModal);
+async function renderProfileUploads() {
+  if (!currentUser) { document.getElementById('myUploadsList').innerHTML = '<div class="empty-msg">Sign in to see your uploads.</div>'; return; }
+  const snapshot = await db.collection('songs').where('userId', '==', currentUser.uid).get();
+  const mySongs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const container = document.getElementById('myUploadsList');
+  if (!mySongs.length) { container.innerHTML = '<div class="empty-msg">You haven\'t uploaded anything yet.</div>'; return; }
+  container.innerHTML = mySongs.map(song => `<div class="my-song-item"><div><i class="fas ${song.mediaType === 'audio' ? 'fa-music' : 'fa-video'}"></i> <strong>${escapeHtml(song.title)}</strong> - ${escapeHtml(song.artist)} (${song.playCount||0} plays)</div><button class="delete-song-btn" data-id="${song.id}"><i class="fas fa-trash"></i> Delete</button></div>`).join('');
+  document.querySelectorAll('.delete-song-btn').forEach(btn => { btn.onclick = async () => { const id = btn.getAttribute('data-id'); if (confirm('Delete permanently?')) { await db.collection('songs').doc(id).delete(); showToast('Deleted'); } }; });
+}
 
-  // ========== LOAD SONGS ==========
-  function loadSongs() {
-    db.collection('songs').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-      allSongs = [];
-      snapshot.forEach(doc => {
-        allSongs.push({ id: doc.id, ...doc.data() });
-      });
-      renderHome();
-      renderProfileUploads();
-    });
-  }
-
-  async function incrementPlayCount(songId) {
-    const songRef = db.collection('songs').doc(songId);
-    await songRef.update({ playCount: firebase.firestore.FieldValue.increment(1) });
-  }
-
-  function renderHome() {
-    let filtered = allSongs;
-    if (currentFilter === 'audio') filtered = allSongs.filter(s => s.mediaType === 'audio');
-    else if (currentFilter === 'video') filtered = allSongs.filter(s => s.mediaType === 'video');
-    if (currentSearch.trim()) {
-      const term = currentSearch.toLowerCase();
-      filtered = filtered.filter(s => s.title.toLowerCase().includes(term) || s.artist.toLowerCase().includes(term));
-    }
-    const trending = [...allSongs].sort((a,b) => (b.playCount||0) - (a.playCount||0)).slice(0,6);
-    trendingGrid.innerHTML = trending.map(createSongCard).join('');
-    filteredGrid.innerHTML = filtered.map(createSongCard).join('');
-    attachCardEvents();
-  }
-
-  function createSongCard(song) {
-    const cover = song.coverURL ? `<img class="cover-img" src="${song.coverURL}" alt="cover">` : `<div class="cover-img" style="display:flex;align-items:center;justify-content:center;background:#2a2e54;"><i class="fas fa-music" style="font-size:2rem;"></i></div>`;
-    return `
-      <div class="song-card" data-id="${song.id}">
-        ${cover}
-        <div class="card-info">
-          <div class="song-title">${escapeHtml(song.title)}</div>
-          <div class="song-artist">${escapeHtml(song.artist)}</div>
-          <div class="card-stats">
-            <span><i class="fas fa-headphones"></i> ${song.playCount || 0}</span>
-            <div>
-              <button class="watch-btn" data-id="${song.id}"><i class="fas ${song.mediaType === 'audio' ? 'fa-play-circle' : 'fa-video'}"></i> ${song.mediaType === 'audio' ? 'Play' : 'Watch'}</button>
-              <button class="download-btn" data-id="${song.id}"><i class="fas fa-download"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  function attachCardEvents() {
-    document.querySelectorAll('.watch-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const id = btn.getAttribute('data-id');
-        const song = allSongs.find(s => s.id === id);
-        if (song) {
-          await incrementPlayCount(song.id);
-          if (song.mediaType === 'audio') playAudio(song);
-          else openVideoModal(song.mediaURL);
-        }
-      });
-    });
-    document.querySelectorAll('.download-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = btn.getAttribute('data-id');
-        const song = allSongs.find(s => s.id === id);
-        if (song) {
-          const a = document.createElement('a');
-          a.href = song.mediaURL;
-          a.download = `${song.title}.${song.mediaURL.split('.').pop()}`;
-          a.click();
-          showToast(`Downloading ${song.title}`);
-        }
-      });
-    });
-  }
-
-  // ========== AUDIO PLAYER ==========
-  function playAudio(song) {
-    if (currentSongId === song.id && !audioElement.paused) return;
-    currentSongId = song.id;
-    audioElement.src = song.mediaURL;
-    audioElement.load();
-    audioElement.play();
-    document.getElementById('globalPlayer').style.display = 'flex';
-    document.getElementById('playerTrackName').innerText = `${song.title} - ${song.artist}`;
-    updatePlayPauseUI();
-    audioQueue = allSongs.filter(s => s.mediaType === 'audio').map(s => s.id);
-    audioIndex = audioQueue.findIndex(id => id === song.id);
-  }
-
-  function updatePlayPauseUI() {
-    const btn = document.getElementById('playerPlayPause');
-    if (audioElement.paused) btn.innerHTML = '<i class="fas fa-play"></i>';
-    else btn.innerHTML = '<i class="fas fa-pause"></i>';
-  }
-
-  function setupAudioEvents() {
-    audioElement.addEventListener('play', updatePlayPauseUI);
-    audioElement.addEventListener('pause', updatePlayPauseUI);
-    audioElement.addEventListener('timeupdate', () => {
-      if (audioElement.duration) {
-        const percent = (audioElement.currentTime / audioElement.duration) * 100;
-        document.getElementById('playerProgressFill').style.width = `${percent}%`;
-        document.getElementById('playerCurrentTime').innerText = formatTime(audioElement.currentTime);
-      }
-    });
-    audioElement.addEventListener('loadedmetadata', () => {
-      document.getElementById('playerDuration').innerText = formatTime(audioElement.duration);
-    });
-    audioElement.addEventListener('ended', () => playNextAudio());
-    document.getElementById('playerPlayPause').onclick = () => audioElement.paused ? audioElement.play() : audioElement.pause();
-    document.getElementById('playerPrev').onclick = () => playPrevAudio();
-    document.getElementById('playerNext').onclick = () => playNextAudio();
-    const volSlider = document.getElementById('playerVolume');
-    volSlider.oninput = (e) => audioElement.volume = e.target.value;
-    audioElement.volume = 0.7;
-    
-    const progressBar = document.querySelector('#globalPlayer .progress-bar');
-    if (progressBar) {
-      progressBar.addEventListener('click', (e) => {
-        const rect = progressBar.getBoundingClientRect();
-        const percent = (e.clientX - rect.left) / rect.width;
-        if (audioElement.duration) audioElement.currentTime = percent * audioElement.duration;
-      });
-    }
-  }
-
-  function playNextAudio() {
-    if (audioQueue.length === 0) return;
-    if (audioIndex === -1) audioIndex = 0;
-    let nextIdx = (audioIndex + 1) % audioQueue.length;
-    const nextSong = allSongs.find(s => s.id === audioQueue[nextIdx]);
-    if (nextSong) playAudio(nextSong);
-  }
-  function playPrevAudio() {
-    if (audioQueue.length === 0) return;
-    if (audioIndex === -1) audioIndex = 0;
-    let prevIdx = (audioIndex - 1 + audioQueue.length) % audioQueue.length;
-    const prevSong = allSongs.find(s => s.id === audioQueue[prevIdx]);
-    if (prevSong) playAudio(prevSong);
-  }
-
-  function openVideoModal(url) {
-    const modal = document.getElementById('videoModal');
-    const video = document.getElementById('modalVideo');
-    video.src = url;
-    modal.style.display = 'flex';
-    video.play();
-  }
-  document.querySelector('.close-modal').onclick = () => {
-    document.getElementById('videoModal').style.display = 'none';
-    document.getElementById('modalVideo').pause();
-  };
-
-  // ========== PROFILE UPLOADS ==========
-  async function renderProfileUploads() {
-    if (!currentUser) {
-      document.getElementById('myUploadsList').innerHTML = '<div class="empty-msg">Sign in to see your uploads.</div>';
-      return;
-    }
-    const snapshot = await db.collection('songs').where('userId', '==', currentUser.uid).get();
-    const mySongs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const container = document.getElementById('myUploadsList');
-    if (!mySongs.length) {
-      container.innerHTML = '<div class="empty-msg">You haven\'t uploaded anything yet.</div>';
-      return;
-    }
-    container.innerHTML = mySongs.map(song => `
-      <div class="my-song-item">
-        <div><i class="fas ${song.mediaType === 'audio' ? 'fa-music' : 'fa-video'}"></i> <strong>${escapeHtml(song.title)}</strong> - ${escapeHtml(song.artist)} (${song.playCount||0} plays)</div>
-        <button class="delete-song-btn" data-id="${song.id}"><i class="fas fa-trash"></i> Delete</button>
-      </div>
-    `).join('');
-    document.querySelectorAll('.delete-song-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const id = btn.getAttribute('data-id');
-        if (confirm
+// Upload Wizard
+async function uploadToCloudinary(file) { const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET); fd.append('resource_type', 'auto'); const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: 'POST', body: fd }); if (!res.ok) throw new Error('Upload failed'); const data = await res.json(); return data.secure_url; }
+let wizardData = { artist: '', title: '', mediaFile: null, mediaType: '', coverFile: null };
+function resetWizard() { wizardData = { artist: '', title: '', mediaFile: null, mediaType: '', coverFile: null }; document.getElementById('wizardArtist').value = ''; document.getElementById('wizardTitle').value = ''; document.getElementById('mediaFileInfo').innerHTML = ''; document.getElementById('coverInfo').innerHTML = ''; document.getElementById('mediaNextBtn').disabled = true; document.getElementById('continueWithCoverBtn').disabled = true; document.getElementById('step1').classList.add('active-step'); document.getElementById('step2').classList.remove('active-step'); document.getElementById('step3').classList.remove('active-step'); document.getElementById('step4').classList.remove('active-step'); document.getElementById('step1').style.display = 'block'; document.getElementById('step2').style.display = 'none'; document.getElementById('step3').style.display = 'none'; document.getElementById('step4').style.display = 'none'; }
+document.getElementById('showUploadWizardBtn').onclick = () => { if(currentUser) resetWizard(); else showToast('Please sign in first'); };
+document.getElementById('enterDetailsBtn').onclick = () => { const a = document.getElementById('wizardArtist').value.trim(); const t = document.getElementById('wizardTitle').value.trim(); if (!a || !t) { showToast('Artist and title required'); return; } wizardData.artist = a; wizardData.title = t; document.getElementById('step1').classList.remove('active-step'); document.getElementById('step2').classList.add('active-step'); document.getElementById('step1').style.display = 'none'; document.getElementById('step2').style.display = 'block'; };
+function triggerMediaPicker(type) { const input = document.createElement('input'); input.type = 'file'; input.accept = type === 'audio' ? 'audio/*' : 'video/*'; input.onchange = (e) => { const file = e.target.files[0]; if (file) { wizardData.mediaFile = file; wizardData.mediaType = type; document.getElementById('mediaFileInfo').innerHTML = `<i class="fas fa-check"></i> ${file.name}`; document.getElementById('mediaNextBtn').disabled = false; } }; input.click(); }
+document.getElementById('audioPickerBtn').
