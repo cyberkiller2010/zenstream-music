@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
-  // Enable CORS for GitHub Pages
-  res.setHeader('Access-Control-Allow-Origin', 'https://cyberkiller2010.github.io');
+  const allowedOrigin = 'https://cyberkiller2010.github.io';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -19,20 +19,25 @@ export default async function handler(req, res) {
 
   const AUTH_KEY = '01KTJAC0JCVK34N8789M5NWYJQ';
 
-  try {
-    const response = await fetch('https://moneyunify.one/api/v1/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ auth_id: AUTH_KEY, transaction_id })
-    });
-    const data = await response.json();
+  // According to MoneyUnify documentation, verify transaction with this endpoint[citation:2]
+  const response = await fetch('https://api.moneyunify.one/payments/verify', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json'
+    },
+    body: new URLSearchParams({
+      transaction_id: transaction_id,
+      auth_id: AUTH_KEY
+    })
+  });
 
-    if (data.status === 'success' && data.data?.status === 'successful') {
-      return res.status(200).json({ success: true, paid: true, amount: data.data.amount });
-    } else {
-      return res.status(200).json({ success: false, paid: false, message: data.message });
-    }
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+  const data = await response.json();
+
+  // Check if transaction is successful based on response structure[citation:2]
+  if (!data.isError && data.data?.status === 'success') {
+    return res.status(200).json({ success: true, paid: true });
+  } else {
+    return res.status(200).json({ success: false, paid: false });
   }
 }
