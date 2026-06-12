@@ -1,6 +1,14 @@
-
 export default async function handler(req, res) {
-  // Only allow POST requests
+  // Enable CORS for GitHub Pages
+  res.setHeader('Access-Control-Allow-Origin', 'https://cyberkiller2010.github.io');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -10,10 +18,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Phone number and user ID required' });
   }
 
-  // Your MoneyUnify Auth Key (from your dashboard)
   const AUTH_KEY = '01KTJAC0JCVK34N8789M5NWYJQ';
-
-  // Generate a unique reference that includes the user ID
   const reference = `ZS_${userId}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 
   const payload = {
@@ -23,7 +28,7 @@ export default async function handler(req, res) {
     currency: 'ZMW',
     reference: reference,
     description: 'ZenStream - 1 Song Upload',
-    callback_url: `https://zenstream-music.vercel.app/api/verify`   // we'll create this next
+    callback_url: `https://zenstream-music.vercel.app/api/check-payment`
   };
 
   try {
