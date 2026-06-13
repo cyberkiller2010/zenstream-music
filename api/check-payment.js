@@ -19,6 +19,10 @@ export default async function handler(req, res) {
 
   const AUTH_KEY = '01KTJAC0JCVK34N8789M5NWYJQ';
 
+  const params = new URLSearchParams();
+  params.append('auth_id', AUTH_KEY);
+  params.append('transaction_id', transaction_id);
+
   try {
     const response = await fetch('https://api.moneyunify.one/payments/verify', {
       method: 'POST',
@@ -26,15 +30,12 @@ export default async function handler(req, res) {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json'
       },
-      body: new URLSearchParams({
-        transaction_id: transaction_id,
-        auth_id: AUTH_KEY
-      })
+      body: params
     });
 
     const data = await response.json();
 
-    if (!data.isError && data.data?.status === 'success') {
+    if (data.isError === false && data.data?.status === 'success') {
       return res.status(200).json({ success: true, paid: true });
     } else {
       return res.status(200).json({ success: false, paid: false, message: data.message });
