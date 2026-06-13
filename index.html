@@ -124,6 +124,16 @@ detailDownloadBtn.onclick = () => { if (currentDetailSong) downloadSong(currentD
 function setActivePane(pane) { if (pane === 'home') { homePane.classList.add('active-pane'); profilePane.classList.remove('active-pane'); homeBtn.classList.add('active'); profileBtn.classList.remove('active'); renderHome(); } else { profilePane.classList.add('active-pane'); homePane.classList.remove('active-pane'); profileBtn.classList.add('active'); homeBtn.classList.remove('active'); renderProfileUploads(); } }
 homeBtn.onclick = () => setActivePane('home'); profileBtn.onclick = () => setActivePane('profile');
 
+// Clear search bar on load and when switching to Home
+function clearSearchInput() {
+  if (searchInput) {
+    searchInput.value = '';
+    currentSearch = '';
+    renderHome();
+  }
+}
+window.addEventListener('DOMContentLoaded', clearSearchInput);
+
 const authModalEl = document.getElementById('authModal'), authTitle = document.getElementById('authTitle'), emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput'), authSubmitBtn = document.getElementById('authSubmitBtn'), toggleAuthMode = document.getElementById('toggleAuthMode'), forgotPasswordBtn = document.getElementById('forgotPasswordBtn'), closeAuthModal = document.getElementById('closeAuthModal');
 let isSignUp = false;
 function openAuthModal() { authModalEl.classList.add('active'); }
@@ -207,7 +217,7 @@ async function initiatePayment() {
       document.getElementById('initiatePaymentBtn').style.display = 'none';
       document.getElementById('confirmUploadBtn').style.display = 'block';
     } else {
-      showToast('Payment initiation failed: ' + (result.error || 'Unknown error'));
+      showToast(result.error || 'Payment initiation failed. Please try again.');
     }
   } catch (err) {
     showToast('Network error: ' + err.message);
