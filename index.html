@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>ZenStream | Pay & Upload</title>
+  <title>ZenStream | Zambian Music Platform</title>
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -11,9 +12,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:radial-gradient(circle at 10% 20%,#0a0c18,#020308);color:#edeef2;min-height:100vh;padding:1rem;padding-bottom:90px;}.app{max-width:1400px;margin:0 auto;background:rgba(12,14,28,0.7);backdrop-filter:blur(18px);border-radius:2rem;border:1px solid rgba(255,255,255,0.08);overflow:hidden;}.progress-container{width:100%;height:4px;background:#2a2e50;display:none;}.upload-progress{width:0%;height:100%;background:linear-gradient(90deg,#8b92e8,#6c5ce7);transition:width .2s;}.navbar{padding:.8rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem;border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(6,8,16,0.7);}.logo h1{font-size:1.5rem;background:linear-gradient(135deg,#fff,#b7b2ff);-webkit-background-clip:text;background-clip:text;color:transparent;}.logo span{font-size:.65rem;color:#9da3d4;display:block;}.nav-links{display:flex;gap:.8rem;align-items:center;}.nav-btn{background:transparent;border:none;font-size:.9rem;font-weight:500;color:#cfd5ff;cursor:pointer;padding:.4rem 1rem;border-radius:2rem;display:flex;align-items:center;gap:6px;transition:.2s;}.nav-btn.active,.nav-btn:hover{background:#6c5ce7;color:white;}.auth-btn{background:#2d325a;padding:.35rem 1rem;border-radius:2rem;border:none;color:white;cursor:pointer;font-size:.85rem;display:flex;align-items:center;gap:6px;}.pane{display:none;padding:1.5rem;animation:fade .2s ease;}.pane.active-pane{display:block;}@keyframes fade{from{opacity:0;}to{opacity:1;}}.filter-tabs{display:flex;gap:.8rem;margin-bottom:1.5rem;border-bottom:1px solid #2a2e50;padding-bottom:.4rem;}.filter-btn{background:none;border:none;color:#b7bef0;font-size:.9rem;font-weight:500;cursor:pointer;padding:.25rem .8rem;border-radius:2rem;}.filter-btn.active-filter{background:#6c5ce7;color:white;}.search-section{margin-bottom:1.5rem;position:relative;}.search-wrapper{display:flex;gap:.5rem;background:#181c30b3;border-radius:2rem;align-items:center;padding:.1rem .3rem .1rem 1rem;height:34px;}.search-wrapper i{color:#9ca3e0;font-size:.8rem;}#searchInput{flex:1;background:transparent;border:none;padding:.2rem 0;color:white;font-size:.85rem;outline:none;}.suggestions-box{position:absolute;top:40px;left:0;width:100%;background:#12142ad9;backdrop-filter:blur(12px);border-radius:1rem;max-height:250px;overflow-y:auto;z-index:100;border:1px solid #3d4270;display:none;}.suggestion-item{padding:.6rem 1rem;cursor:pointer;border-bottom:1px solid #2a2e55;font-size:.85rem;}.suggestion-item:hover{background:#2d325b;}.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem;margin-bottom:1.5rem;}.song-card{background:rgba(24,27,52,0.8);border-radius:1rem;overflow:hidden;transition:.2s;cursor:pointer;}.song-card:hover{transform:translateY(-4px);background:#2d325b;}.cover-img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#1e213f;}.card-info{padding:.7rem;}.song-title{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.song-artist{font-size:.7rem;color:#b6bdf0;margin:3px 0;}.card-stats{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:.65rem;}.watch-btn,.download-btn,.edit-btn{background:none;border:none;color:#cfd6ff;cursor:pointer;padding:3px 6px;border-radius:20px;font-size:.7rem;}.watch-btn:hover,.download-btn:hover,.edit-btn:hover{background:#3d4270;}.upload-trigger{background:#6c5ce7;border:none;padding:.6rem 1.5rem;border-radius:2.5rem;font-weight:600;color:white;cursor:pointer;margin-bottom:1.2rem;display:inline-flex;align-items:center;gap:8px;font-size:.9rem;}.wizard-step{background:rgba(20,22,44,0.9);border-radius:1.2rem;padding:1.2rem;margin-bottom:1.5rem;border:1px solid #4a4f82;display:none;}.wizard-step.active-step{display:block;}.form-group{margin-bottom:.8rem;display:flex;flex-direction:column;gap:5px;}.form-group label{font-weight:500;font-size:.85rem;}.form-group input{background:#0f1122;border:1px solid #42477a;border-radius:1rem;padding:.6rem 1rem;color:white;font-size:.85rem;}.btn-primary{background:#6c5ce7;border:none;padding:.6rem 1rem;border-radius:2rem;font-weight:600;color:white;cursor:pointer;font-size:.85rem;}.btn-secondary{background:#2d325a;border:none;padding:.6rem 1rem;border-radius:2rem;font-weight:600;color:white;cursor:pointer;font-size:.85rem;}.media-buttons{display:flex;gap:.8rem;flex-wrap:wrap;margin:.8rem 0;}.media-picker-btn{flex:1;background:#2d325a;border:none;padding:.6rem .8rem;border-radius:2rem;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.85rem;}.review-details{background:#181c30;border-radius:1rem;padding:.8rem;margin:.8rem 0;font-size:.8rem;}.review-item{display:flex;gap:.8rem;margin-bottom:.5rem;align-items:center;}.cover-preview{width:50px;height:50px;object-fit:cover;border-radius:.6rem;}.my-songs-list{max-height:350px;overflow-y:auto;margin-top:.8rem;}.my-song-item{background:rgba(28,31,58,0.7);border-radius:.8rem;padding:.6rem;display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.8rem;flex-wrap:wrap;gap:.5rem;}.my-song-actions{display:flex;gap:0.5rem;}.delete-song-btn,.edit-song-btn{background:#3a2a3c;border:none;color:#ffaeae;padding:.25rem .6rem;border-radius:1.5rem;cursor:pointer;font-size:.7rem;}.edit-song-btn{background:#2d325a;color:#b7b2ff;}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:2000;justify-content:center;align-items:center;}.modal-content{background:#14172b;border-radius:1.5rem;padding:1.5rem;width:90%;max-width:400px;}.modal-content video{max-width:90%;max-height:80vh;border-radius:1rem;}.close-modal{position:absolute;top:20px;right:30px;font-size:2rem;color:white;cursor:pointer;}.player-bar{position:fixed;bottom:0;left:0;right:0;background:#05070fe6;backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.1);padding:.4rem 1.5rem;display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;font-size:.8rem;z-index:1000;}.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1f2342;backdrop-filter:blur(16px);padding:.4rem 1rem;border-radius:40px;z-index:1100;font-size:.8rem;}.auth-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:.2s;}.auth-modal.active{visibility:visible;opacity:1;}.auth-card{background:#14172b;border-radius:1.5rem;padding:1.5rem;width:90%;max-width:350px;border:1px solid #6c5ce7;}.auth-card h3{margin-bottom:1rem;text-align:center;font-size:1.2rem;}.auth-card input{width:100%;margin-bottom:.8rem;padding:.6rem;border-radius:1rem;background:#0a0c1a;border:1px solid #3d4270;color:white;}.auth-card button{width:100%;margin-top:.3rem;}.toggle-auth{text-align:center;margin-top:.8rem;font-size:.75rem;cursor:pointer;color:#b7b2ff;}.skeleton{background:linear-gradient(90deg,#1e213f 25%,#2a2e54 50%,#1e213f 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}.skeleton-card{height:200px;border-radius:1rem;}.profile-pic{width:40px;height:40px;border-radius:50%;object-fit:cover;margin-right:10px;cursor:pointer;}.profile-pic-large{width:100px;height:100px;border-radius:50%;object-fit:cover;margin-bottom:1rem;}@media (max-width:600px){.navbar{padding:.6rem 1rem;}.pane{padding:1rem;}.cards-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}.player-bar{padding:.4rem 1rem;}}
+    *{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:radial-gradient(circle at 10% 20%,#0a0c18,#020308);color:#edeef2;min-height:100vh;padding:1rem;padding-bottom:90px;}.app{max-width:1400px;margin:0 auto;background:rgba(12,14,28,0.7);backdrop-filter:blur(18px);border-radius:2rem;border:1px solid rgba(255,255,255,0.08);overflow:hidden;}.progress-container{width:100%;height:4px;background:#2a2e50;display:none;}.upload-progress{width:0%;height:100%;background:linear-gradient(90deg,#8b92e8,#6c5ce7);transition:width .2s;}.navbar{padding:.8rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem;border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(6,8,16,0.7);}.logo h1{font-size:1.5rem;background:linear-gradient(135deg,#fff,#b7b2ff);-webkit-background-clip:text;background-clip:text;color:transparent;}.logo span{font-size:.65rem;color:#9da3d4;display:block;}.nav-links{display:flex;gap:.8rem;align-items:center;}.nav-btn{background:transparent;border:none;font-size:.9rem;font-weight:500;color:#cfd5ff;cursor:pointer;padding:.4rem 1rem;border-radius:2rem;display:flex;align-items:center;gap:6px;transition:.2s;}.nav-btn.active,.nav-btn:hover{background:#6c5ce7;color:white;}.auth-btn{background:#2d325a;padding:.35rem 1rem;border-radius:2rem;border:none;color:white;cursor:pointer;font-size:.85rem;display:flex;align-items:center;gap:6px;}.pane{display:none;padding:1.5rem;animation:fade .2s ease;}.pane.active-pane{display:block;}@keyframes fade{from{opacity:0;}to{opacity:1;}}.filter-tabs{display:flex;gap:.8rem;margin-bottom:1.5rem;border-bottom:1px solid #2a2e50;padding-bottom:.4rem;}.filter-btn{background:none;border:none;color:#b7bef0;font-size:.9rem;font-weight:500;cursor:pointer;padding:.25rem .8rem;border-radius:2rem;}.filter-btn.active-filter{background:#6c5ce7;color:white;}.search-section{margin-bottom:1.5rem;position:relative;}.search-wrapper{display:flex;gap:.5rem;background:#181c30b3;border-radius:2rem;align-items:center;padding:.1rem .3rem .1rem 1rem;height:34px;}.search-wrapper i{color:#9ca3e0;font-size:.8rem;}#searchInput{flex:1;background:transparent;border:none;padding:.2rem 0;color:white;font-size:.85rem;outline:none;}.suggestions-box{position:absolute;top:40px;left:0;width:100%;background:#12142ad9;backdrop-filter:blur(12px);border-radius:1rem;max-height:250px;overflow-y:auto;z-index:100;border:1px solid #3d4270;display:none;}.suggestion-item{padding:.6rem 1rem;cursor:pointer;border-bottom:1px solid #2a2e55;font-size:.85rem;}.suggestion-item:hover{background:#2d325b;}.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem;margin-bottom:1.5rem;}.song-card{background:rgba(24,27,52,0.8);border-radius:1rem;overflow:hidden;transition:.2s;cursor:pointer;}.song-card:hover{transform:translateY(-4px);background:#2d325b;}.cover-img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#1e213f;}.card-info{padding:.7rem;}.song-title{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.song-artist{font-size:.7rem;color:#b6bdf0;margin:3px 0;cursor:pointer;}.song-artist:hover{color:#b7b2ff;text-decoration:underline;}.card-stats{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:.65rem;}.watch-btn,.download-btn,.edit-btn{background:none;border:none;color:#cfd6ff;cursor:pointer;padding:3px 6px;border-radius:20px;font-size:.7rem;}.watch-btn:hover,.download-btn:hover,.edit-btn:hover{background:#3d4270;}.upload-trigger{background:#6c5ce7;border:none;padding:.6rem 1.5rem;border-radius:2.5rem;font-weight:600;color:white;cursor:pointer;margin-bottom:1.2rem;display:inline-flex;align-items:center;gap:8px;font-size:.9rem;}.wizard-step{background:rgba(20,22,44,0.9);border-radius:1.2rem;padding:1.2rem;margin-bottom:1.5rem;border:1px solid #4a4f82;display:none;}.wizard-step.active-step{display:block;}.form-group{margin-bottom:.8rem;display:flex;flex-direction:column;gap:5px;}.form-group label{font-weight:500;font-size:.85rem;}.form-group input{background:#0f1122;border:1px solid #42477a;border-radius:1rem;padding:.6rem 1rem;color:white;font-size:.85rem;}.btn-primary{background:#6c5ce7;border:none;padding:.6rem 1rem;border-radius:2rem;font-weight:600;color:white;cursor:pointer;font-size:.85rem;}.btn-secondary{background:#2d325a;border:none;padding:.6rem 1rem;border-radius:2rem;font-weight:600;color:white;cursor:pointer;font-size:.85rem;}.media-buttons{display:flex;gap:.8rem;flex-wrap:wrap;margin:.8rem 0;}.media-picker-btn{flex:1;background:#2d325a;border:none;padding:.6rem .8rem;border-radius:2rem;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.85rem;}.review-details{background:#181c30;border-radius:1rem;padding:.8rem;margin:.8rem 0;font-size:.8rem;}.review-item{display:flex;gap:.8rem;margin-bottom:.5rem;align-items:center;}.cover-preview{width:50px;height:50px;object-fit:cover;border-radius:.6rem;}.my-songs-list{max-height:350px;overflow-y:auto;margin-top:.8rem;}.my-song-item{background:rgba(28,31,58,0.7);border-radius:.8rem;padding:.6rem;display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.8rem;flex-wrap:wrap;gap:.5rem;}.my-song-actions{display:flex;gap:0.5rem;}.delete-song-btn,.edit-song-btn{background:#3a2a3c;border:none;color:#ffaeae;padding:.25rem .6rem;border-radius:1.5rem;cursor:pointer;font-size:.7rem;}.edit-song-btn{background:#2d325a;color:#b7b2ff;}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:2000;justify-content:center;align-items:center;}.modal-content{background:#14172b;border-radius:1.5rem;padding:1.5rem;width:90%;max-width:400px;}.modal-content video{max-width:90%;max-height:80vh;border-radius:1rem;}.close-modal{position:absolute;top:20px;right:30px;font-size:2rem;color:white;cursor:pointer;}.player-bar{position:fixed;bottom:0;left:0;right:0;background:#05070fe6;backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.1);padding:.4rem 1.5rem;display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;font-size:.8rem;z-index:1000;}.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1f2342;backdrop-filter:blur(16px);padding:.4rem 1rem;border-radius:40px;z-index:1100;font-size:.8rem;}.auth-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:.2s;}.auth-modal.active{visibility:visible;opacity:1;}.auth-card{background:#14172b;border-radius:1.5rem;padding:1.5rem;width:90%;max-width:350px;border:1px solid #6c5ce7;}.auth-card h3{margin-bottom:1rem;text-align:center;font-size:1.2rem;}.auth-card input{width:100%;margin-bottom:.8rem;padding:.6rem;border-radius:1rem;background:#0a0c1a;border:1px solid #3d4270;color:white;}.auth-card button{width:100%;margin-top:.3rem;}.toggle-auth{text-align:center;margin-top:.8rem;font-size:.75rem;cursor:pointer;color:#b7b2ff;}.skeleton{background:linear-gradient(90deg,#1e213f 25%,#2a2e54 50%,#1e213f 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}.skeleton-card{height:200px;border-radius:1rem;}.profile-pic{width:40px;height:40px;border-radius:50%;object-fit:cover;margin-right:10px;cursor:pointer;}.profile-pic-large{width:100px;height:100px;border-radius:50%;object-fit:cover;margin-bottom:1rem;}@media (max-width:600px){.navbar{padding:.6rem 1rem;}.pane{padding:1rem;}.cards-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}.player-bar{padding:.4rem 1rem;}}
     .detail-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);backdrop-filter:blur(16px);z-index:3000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:.2s;}.detail-modal.active{visibility:visible;opacity:1;}.detail-card{background:#14172b;border-radius:2rem;padding:2rem;width:90%;max-width:450px;text-align:center;border:1px solid #6c5ce7;box-shadow:0 20px 35px -10px black;}.detail-cover{width:200px;height:200px;border-radius:1rem;object-fit:cover;margin:0 auto 1rem;background:#2a2e54;}.detail-title{font-size:1.5rem;font-weight:700;margin-bottom:.5rem;}.detail-artist{font-size:1rem;color:#b6bdf0;margin-bottom:1rem;}.detail-plays{font-size:.8rem;color:#8b92e8;margin-bottom:1.5rem;}.detail-buttons{display:flex;gap:1rem;justify-content:center;}.detail-buttons button{padding:.6rem 1.2rem;font-size:1rem;}
-    /* BIG PAYMENT ERROR MODAL */
+    .share-buttons{display:flex;gap:0.5rem;justify-content:center;margin-top:0.5rem;}.share-buttons button{background:#2d325a;border:none;padding:4px 8px;border-radius:20px;color:white;cursor:pointer;font-size:0.7rem;}
     .error-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);backdrop-filter:blur(12px);z-index:5000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:.2s;}.error-modal.active{visibility:visible;opacity:1;}.error-card{background:#14172b;border-radius:2rem;padding:2rem;width:90%;max-width:450px;text-align:center;border:2px solid #ff4444;box-shadow:0 0 30px rgba(255,68,68,0.3);}.error-card i{font-size:4rem;color:#ff4444;margin-bottom:1rem;}.error-card h2{font-size:1.8rem;margin-bottom:1rem;color:#ff8888;}.error-card p{font-size:1.2rem;margin-bottom:1.5rem;color:#ffffff;line-height:1.4;}.error-card button{background:#6c5ce7;border:none;padding:0.8rem 1.5rem;border-radius:2rem;font-size:1rem;font-weight:bold;color:white;cursor:pointer;}
   </style>
 </head>
@@ -21,7 +22,7 @@
 <div class="app">
   <div class="progress-container" id="progressContainer"><div class="upload-progress" id="uploadProgressFill"></div></div>
   <div class="navbar">
-    <div class="logo"><h1>🎧 ZenStream</h1><span>Zambia · pay & upload</span></div>
+    <div class="logo"><h1>🎧 ZenStream</h1><span>Zambia's Music Platform</span></div>
     <div class="nav-links">
       <button class="nav-btn active" id="homeNavBtn"><i class="fas fa-home"></i> Home</button>
       <button class="nav-btn" id="profileNavBtn"><i class="fas fa-user-astronaut"></i> Profile</button>
@@ -42,7 +43,7 @@
       <button class="filter-btn" data-filter="audio">Audio</button>
       <button class="filter-btn" data-filter="video">Video</button>
     </div>
-    <div class="section-title"><i class="fas fa-fire"></i> Most Played 🔥</div>
+    <div class="section-title"><i class="fas fa-fire"></i> Top Charts 🔥</div>
     <div class="cards-grid" id="trendingGrid"><div class="skeleton-card skeleton"></div><div class="skeleton-card skeleton"></div><div class="skeleton-card skeleton"></div></div>
     <div class="section-title" id="filterSectionTitle"><i class="fas fa-globe"></i> All Music & Videos</div>
     <div class="cards-grid" id="filteredGrid"><div class="skeleton-card skeleton"></div><div class="skeleton-card skeleton"></div><div class="skeleton-card skeleton"></div></div>
@@ -92,7 +93,7 @@
 <div id="editModal" class="modal"><div class="modal-content"><h3>Edit Song Details</h3><div class="form-group"><label>Title</label><input type="text" id="editTitle"></div><div class="form-group"><label>Artist</label><input type="text" id="editArtist"></div><button id="saveEditBtn" class="btn-primary">Save Changes</button><button id="cancelEditBtn" class="btn-secondary" style="margin-top:.5rem;">Cancel</button></div></div>
 <div id="videoModal" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><video id="modalVideo" controls></video></div></div>
 <div id="authModal" class="auth-modal"><div class="auth-card"><h3 id="authTitle">Sign in to upload</h3><input type="email" id="emailInput" placeholder="Email address"><input type="password" id="passwordInput" placeholder="Password"><button id="authSubmitBtn" class="btn-primary">Sign in</button><div class="toggle-auth" id="toggleAuthMode">Don't have an account? Sign up</div><div class="toggle-auth" id="forgotPasswordBtn">Forgot password?</div><div class="toggle-auth" id="closeAuthModal">Cancel</div></div></div>
-<div id="detailModal" class="detail-modal"><div class="detail-card"><img id="detailCover" class="detail-cover" src="" alt="cover"><div id="detailTitle" class="detail-title"></div><div id="detailArtist" class="detail-artist"></div><div id="detailPlays" class="detail-plays"></div><div class="detail-buttons"><button id="detailPlayBtn" class="btn-primary"><i class="fas fa-play"></i> Play</button><button id="detailDownloadBtn" class="btn-secondary"><i class="fas fa-download"></i> Download</button></div><button id="closeDetailModal" style="margin-top:1rem;" class="btn-secondary">Close</button></div></div>
+<div id="detailModal" class="detail-modal"><div class="detail-card"><img id="detailCover" class="detail-cover" src="" alt="cover"><div id="detailTitle" class="detail-title"></div><div id="detailArtist" class="detail-artist" style="cursor:pointer;"></div><div id="detailPlays" class="detail-plays"></div><div class="share-buttons"><button onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button><button onclick="shareOnFacebook()"><i class="fab fa-facebook"></i> Facebook</button><button onclick="shareOnTwitter()"><i class="fab fa-twitter"></i> Twitter</button></div><div class="detail-buttons"><button id="detailPlayBtn" class="btn-primary"><i class="fas fa-play"></i> Play</button><button id="detailDownloadBtn" class="btn-secondary"><i class="fas fa-download"></i> Download</button></div><button id="closeDetailModal" style="margin-top:1rem;" class="btn-secondary">Close</button></div></div>
 
 <!-- BIG PAYMENT ERROR MODAL -->
 <div id="errorModal" class="error-modal">
@@ -125,18 +126,14 @@ function showToast(msg) { let t = document.querySelector('.toast'); if (t) t.rem
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function formatTime(sec) { if (isNaN(sec)) return "0:00"; const m = Math.floor(sec/60), s = Math.floor(sec%60); return `${m}:${s.toString().padStart(2,'0')}`; }
 
-// Big error modal functions
-function showPaymentError(message) {
-  const errorModal = document.getElementById('errorModal');
-  const errorMsg = document.getElementById('errorMessage');
-  errorMsg.innerText = message;
-  errorModal.classList.add('active');
-}
-function closeErrorModal() {
-  document.getElementById('errorModal').classList.remove('active');
-}
+// Share functions
+function shareOnWhatsApp() { if(currentDetailSong) window.open(`https://wa.me/?text=Listen to ${encodeURIComponent(currentDetailSong.title)} by ${encodeURIComponent(currentDetailSong.artist)} on ZenStream! ${window.location.origin}/?song=${currentDetailSong.id}`, '_blank'); }
+function shareOnFacebook() { if(currentDetailSong) window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}/?song=${currentDetailSong.id}`, '_blank'); }
+function shareOnTwitter() { if(currentDetailSong) window.open(`https://twitter.com/intent/tweet?text=Listen to ${encodeURIComponent(currentDetailSong.title)} by ${encodeURIComponent(currentDetailSong.artist)} on ZenStream! ${window.location.origin}/?song=${currentDetailSong.id}`, '_blank'); }
+window.shareOnWhatsApp = shareOnWhatsApp;
+window.shareOnFacebook = shareOnFacebook;
+window.shareOnTwitter = shareOnTwitter;
 
-// Download function (fetch + custom filename)
 async function downloadSong(song) {
   showToast('Preparing download...');
   try {
@@ -167,10 +164,29 @@ async function downloadSong(song) {
   }
 }
 
-function openDetailModal(song) { currentDetailSong = song; detailCover.src = song.coverURL || 'https://via.placeholder.com/200'; detailTitle.innerText = song.title; detailArtist.innerText = song.artist; detailPlays.innerText = `${song.playCount || 0} plays`; detailModal.classList.add('active'); }
+function openDetailModal(song) { 
+  currentDetailSong = song; 
+  detailCover.src = song.coverURL || 'https://via.placeholder.com/200'; 
+  detailTitle.innerText = song.title; 
+  detailArtist.innerText = song.artist; 
+  detailPlays.innerText = `${song.playCount || 0} plays`; 
+  detailModal.classList.add('active'); 
+}
 closeDetailModal.onclick = () => detailModal.classList.remove('active');
 detailPlayBtn.onclick = () => { if (currentDetailSong) { if (currentDetailSong.mediaType === 'audio') playAudio(currentDetailSong); else openVideoModal(currentDetailSong.mediaURL); detailModal.classList.remove('active'); } };
 detailDownloadBtn.onclick = () => { if (currentDetailSong) downloadSong(currentDetailSong); };
+detailArtist.onclick = () => { if(currentDetailSong) searchInput.value = currentDetailSong.artist; currentSearch = currentDetailSong.artist; renderHome(); detailModal.classList.remove('active'); };
+
+function showPaymentError(message) {
+  const errorModal = document.getElementById('errorModal');
+  const errorMsg = document.getElementById('errorMessage');
+  errorMsg.innerText = message;
+  errorModal.classList.add('active');
+}
+function closeErrorModal() {
+  document.getElementById('errorModal').classList.remove('active');
+}
+window.closeErrorModal = closeErrorModal;
 
 function setActivePane(pane) { if (pane === 'home') { homePane.classList.add('active-pane'); profilePane.classList.remove('active-pane'); homeBtn.classList.add('active'); profileBtn.classList.remove('active'); renderHome(); } else { profilePane.classList.add('active-pane'); homePane.classList.remove('active-pane'); profileBtn.classList.add('active'); homeBtn.classList.remove('active'); renderProfileUploads(); } }
 homeBtn.onclick = () => setActivePane('home'); profileBtn.onclick = () => setActivePane('profile');
@@ -220,12 +236,13 @@ function renderHome() {
   attachCardEvents();
 }
 
-function createSongCard(song) { const cover = song.coverURL ? `<img class="cover-img" src="${song.coverURL}" alt="cover">` : `<div class="cover-img" style="display:flex;align-items:center;justify-content:center;background:#2a2e54;"><i class="fas fa-music" style="font-size:2rem;"></i></div>`; return `<div class="song-card" data-id="${song.id}" data-title="${escapeHtml(song.title)}" data-artist="${escapeHtml(song.artist)}" data-cover="${song.coverURL || ''}" data-plays="${song.playCount || 0}" data-mediaurl="${song.mediaURL}" data-mediatype="${song.mediaType}">${cover}<div class="card-info"><div class="song-title">${escapeHtml(song.title)}</div><div class="song-artist">${escapeHtml(song.artist)}</div><div class="card-stats"><span><i class="fas fa-headphones"></i> ${song.playCount || 0}</span><div><button class="watch-btn" data-id="${song.id}"><i class="fas ${song.mediaType === 'audio' ? 'fa-play-circle' : 'fa-video'}"></i> ${song.mediaType === 'audio' ? 'Play' : 'Watch'}</button><button class="download-btn" data-id="${song.id}"><i class="fas fa-download"></i></button></div></div></div></div>`; }
+function createSongCard(song) { const cover = song.coverURL ? `<img class="cover-img" src="${song.coverURL}" alt="cover">` : `<div class="cover-img" style="display:flex;align-items:center;justify-content:center;background:#2a2e54;"><i class="fas fa-music" style="font-size:2rem;"></i></div>`; return `<div class="song-card" data-id="${song.id}" data-title="${escapeHtml(song.title)}" data-artist="${escapeHtml(song.artist)}" data-cover="${song.coverURL || ''}" data-plays="${song.playCount || 0}" data-mediaurl="${song.mediaURL}" data-mediatype="${song.mediaType}">${cover}<div class="card-info"><div class="song-title">${escapeHtml(song.title)}</div><div class="song-artist" data-artist-name="${escapeHtml(song.artist)}">${escapeHtml(song.artist)}</div><div class="card-stats"><span><i class="fas fa-headphones"></i> ${song.playCount || 0}</span><div><button class="watch-btn" data-id="${song.id}"><i class="fas ${song.mediaType === 'audio' ? 'fa-play-circle' : 'fa-video'}"></i> ${song.mediaType === 'audio' ? 'Play' : 'Watch'}</button><button class="download-btn" data-id="${song.id}"><i class="fas fa-download"></i></button></div></div></div></div>`; }
 
 function attachCardEvents() { 
   document.querySelectorAll('.watch-btn').forEach(btn => { btn.onclick = async (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) { await incrementPlayCountIfUnique(id); if (song.mediaType === 'audio') playAudio(song); else openVideoModal(song.mediaURL); } }; }); 
-  document.querySelectorAll('.download-btn').forEach(btn => { btn.onclick = (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) downloadSong(song); }; }); 
-  document.querySelectorAll('.song-card').forEach(card => { card.onclick = (e) => { if (e.target.classList.contains('watch-btn') || e.target.classList.contains('download-btn') || e.target.closest('.watch-btn') || e.target.closest('.download-btn')) return; const id = card.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) openDetailModal(song); }; });
+  document.querySelectorAll('.download-btn').forEach(btn => { btn.onclick = (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) downloadSong(song); }; });
+  document.querySelectorAll('.song-artist').forEach(artist => { artist.onclick = (e) => { e.stopPropagation(); const artistName = artist.getAttribute('data-artist-name'); if(artistName) { searchInput.value = artistName; currentSearch = artistName; renderHome(); } }; });
+  document.querySelectorAll('.song-card').forEach(card => { card.onclick = (e) => { if (e.target.classList.contains('watch-btn') || e.target.classList.contains('download-btn') || e.target.classList.contains('song-artist') || e.target.closest('.watch-btn') || e.target.closest('.download-btn') || e.target.closest('.song-artist')) return; const id = card.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) openDetailModal(song); }; });
 }
 
 function playAudio(song) { if (currentSongId === song.id && !audioElement.paused) return; currentSongId = song.id; audioElement.src = song.mediaURL; audioElement.load(); audioElement.play(); document.getElementById('globalPlayer').style.display = 'flex'; document.getElementById('playerTrackName').innerText = `${song.title} - ${song.artist}`; updatePlayPauseUI(); audioQueue = allSongs.filter(s => s.mediaType === 'audio').map(s => s.id); audioIndex = audioQueue.findIndex(id => id === song.id); }
@@ -252,13 +269,10 @@ document.getElementById('continueNoCoverBtn').onclick = () => { currentWizardDat
 document.getElementById('continueWithCoverBtn').onclick = () => { if(currentWizardData.coverFile) goToReview(); };
 function goToReview() { document.getElementById('step3').classList.remove('active-step'); document.getElementById('step4').classList.add('active-step'); document.getElementById('step3').style.display = 'none'; document.getElementById('step4').style.display = 'block'; const reviewDiv = document.getElementById('reviewDetails'); let coverHtml = currentWizardData.coverFile ? `<img class="cover-preview" src="${URL.createObjectURL(currentWizardData.coverFile)}">` : '<div style="width:50px;height:50px;background:#2a2e54;"></div>'; reviewDiv.innerHTML = `<div><strong>Artist:</strong> ${escapeHtml(currentWizardData.artist)}</div><div><strong>Title:</strong> ${escapeHtml(currentWizardData.title)}</div><div><strong>Type:</strong> ${currentWizardData.mediaType}</div><div><strong>File:</strong> ${escapeHtml(currentWizardData.mediaFile.name)}</div><div><strong>Cover:</strong> ${currentWizardData.coverFile ? currentWizardData.coverFile.name : 'None'}</div><div>${coverHtml}</div>`; document.getElementById('initiatePaymentBtn').style.display = 'block'; document.getElementById('confirmUploadBtn').style.display = 'none'; document.getElementById('paymentStatus').style.display = 'none'; }
 
-// REAL PAYMENT FUNCTION - No test mode
 async function initiatePayment() {
   if (!currentUser) { showToast('Please sign in first.'); return; }
-  
   const phone = prompt('Enter your MTN/Airtel mobile money number (e.g., 0977XXXXXX):');
   if (!phone || phone.length < 9) { showToast('Valid phone number required (minimum 9 digits).'); return; }
-  
   showToast('Requesting payment...');
   try {
     const response = await fetch('https://zenstream-music.vercel.app/api/pay', {
@@ -308,25 +322,13 @@ async function confirmAndUpload() {
         await db.collection('songs').add(songData);
         clearInterval(interval);
         progressFill.style.width = '100%';
-        setTimeout(() => { 
-          progressContainer.style.display = 'none'; 
-          showToast('Upload complete! Thank you.'); 
-          resetWizard(); 
-          document.getElementById('step4').style.display = 'none'; 
-          document.getElementById('step1').style.display = 'block'; 
-        }, 500);
-      } catch (err) { 
-        clearInterval(interval); 
-        progressContainer.style.display = 'none'; 
-        showPaymentError('Upload failed: ' + err.message); 
-      }
+        setTimeout(() => { progressContainer.style.display = 'none'; showToast('Upload complete! Thank you.'); resetWizard(); document.getElementById('step4').style.display = 'none'; document.getElementById('step1').style.display = 'block'; }, 500);
+      } catch (err) { clearInterval(interval); progressContainer.style.display = 'none'; showPaymentError('Upload failed: ' + err.message); }
     } else {
       showPaymentError(verifyResult.message || 'Payment not confirmed. Please check your mobile money and try again.');
       resetWizard();
     }
-  } catch (err) { 
-    showPaymentError('Verification error: ' + err.message); 
-  }
+  } catch (err) { showPaymentError('Verification error: ' + err.message); }
 }
 
 document.getElementById('initiatePaymentBtn').addEventListener('click', initiatePayment);
@@ -348,7 +350,9 @@ setupAudioEvents();
 loadSongs();
 setActivePane('home');
 window.triggerProfilePic = triggerProfilePic;
-window.closeErrorModal = closeErrorModal;
+window.shareOnWhatsApp = shareOnWhatsApp;
+window.shareOnFacebook = shareOnFacebook;
+window.shareOnTwitter = shareOnTwitter;
 </script>
 </body>
 </html>
