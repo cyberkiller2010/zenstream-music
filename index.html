@@ -200,8 +200,37 @@ function goToReview() { document.getElementById('step3').classList.remove('activ
 
 async function initiatePayment() {
   if (!currentUser) { showToast('Please sign in first.'); return; }
-  const phone = prompt('Enter your MTN/Airtel phone number (e.g., 0977XXXXXX):');
-  if (!phone || phone.length < 9) { showToast('Valid phone number required.'); return; }
+  const phone = prompt('Enter your MTN/Airtel phone number (e.g., 0977XXXXXX) or enter TEST123 for test mode:');
+  if (!phone) { showToast('Phone number required.'); return; }
+  
+  // Allow TEST123 as test mode bypass
+  if (phone === 'TEST123') {
+    showToast('Test mode activated. No payment will be deducted.');
+    try {
+      const response = await fetch('https://zenstream-music.vercel.app/api/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phone, userId: currentUser.uid })
+      });
+      const result = await response.json();
+      if (result.success) {
+        currentPaymentTransactionId = result.transaction_id;
+        document.getElementById('paymentStatus').innerHTML = `<i class="fas fa-check-circle"></i> Test mode: Payment bypassed. Click "Confirm Payment & Upload" to continue.`;
+        document.getElementById('paymentStatus').style.display = 'block';
+        document.getElementById('initiatePaymentBtn').style.display = 'none';
+        document.getElementById('confirmUploadBtn').style.display = 'block';
+      } else {
+        showToast(result.error || 'Test mode failed.');
+      }
+    } catch (err) {
+      showToast('Network error: ' + err.message);
+    }
+    return;
+  }
+  
+  // Normal phone number validation
+  if (phone.length < 9) { showToast('Valid phone number required (minimum 9 digits).'); return; }
+  
   showToast('Requesting payment...');
   try {
     const response = await fetch('https://zenstream-music.vercel.app/api/pay', {
