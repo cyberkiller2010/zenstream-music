@@ -113,8 +113,30 @@ function showToast(msg) { let t = document.querySelector('.toast'); if (t) t.rem
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function formatTime(sec) { if (isNaN(sec)) return "0:00"; const m = Math.floor(sec/60), s = Math.floor(sec%60); return `${m}:${s.toString().padStart(2,'0')}`; }
 
-function getFileExtension(url) { try { const filename = url.split('/').pop().split('?')[0]; const ext = filename.split('.').pop(); return ext.match(/[a-z0-9]+/i) ? ext : 'mp3'; } catch(e) { return 'mp3'; } }
-function downloadSong(song) { const extension = getFileExtension(song.mediaURL); const filename = `${song.artist} - ${song.title}.${extension}`; const a = document.createElement('a'); a.href = song.mediaURL; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast(`Downloading ${filename}`); }
+// FIXED DOWNLOAD FUNCTION - Saves as "Artist - Title.extension"
+function getFileExtension(url) {
+  try {
+    const filename = url.split('/').pop().split('?')[0];
+    const ext = filename.split('.').pop();
+    return ext && ext.match(/[a-z0-9]+/i) ? ext : 'mp3';
+  } catch(e) { return 'mp3'; }
+}
+
+function downloadSong(song) {
+  const extension = getFileExtension(song.mediaURL);
+  // Clean artist and title for filename (remove special characters)
+  const cleanArtist = song.artist.replace(/[^a-zA-Z0-9\s\-]/g, '').trim();
+  const cleanTitle = song.title.replace(/[^a-zA-Z0-9\s\-]/g, '').trim();
+  const filename = `${cleanArtist} - ${cleanTitle}.${extension}`;
+  
+  const a = document.createElement('a');
+  a.href = song.mediaURL;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast(`Downloading: ${filename}`);
+}
 
 function openDetailModal(song) { currentDetailSong = song; detailCover.src = song.coverURL || 'https://via.placeholder.com/200'; detailTitle.innerText = song.title; detailArtist.innerText = song.artist; detailPlays.innerText = `${song.playCount || 0} plays`; detailModal.classList.add('active'); }
 closeDetailModal.onclick = () => detailModal.classList.remove('active');
