@@ -113,29 +113,45 @@ function showToast(msg) { let t = document.querySelector('.toast'); if (t) t.rem
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function formatTime(sec) { if (isNaN(sec)) return "0:00"; const m = Math.floor(sec/60), s = Math.floor(sec%60); return `${m}:${s.toString().padStart(2,'0')}`; }
 
-// FIXED DOWNLOAD FUNCTION - Saves as "Artist - Title.extension"
-function getFileExtension(url) {
+// ========== FIXED DOWNLOAD FUNCTION ==========
+// This fetches the file from Cloudinary and saves it with the correct Artist - Title name
+async function downloadSong(song) {
+  showToast('Preparing download...');
   try {
-    const filename = url.split('/').pop().split('?')[0];
-    const ext = filename.split('.').pop();
-    return ext && ext.match(/[a-z0-9]+/i) ? ext : 'mp3';
-  } catch(e) { return 'mp3'; }
-}
-
-function downloadSong(song) {
-  const extension = getFileExtension(song.mediaURL);
-  // Clean artist and title for filename (remove special characters)
-  const cleanArtist = song.artist.replace(/[^a-zA-Z0-9\s\-]/g, '').trim();
-  const cleanTitle = song.title.replace(/[^a-zA-Z0-9\s\-]/g, '').trim();
-  const filename = `${cleanArtist} - ${cleanTitle}.${extension}`;
-  
-  const a = document.createElement('a');
-  a.href = song.mediaURL;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  showToast(`Downloading: ${filename}`);
+    // Fetch the file from Cloudinary
+    const response = await fetch(song.mediaURL);
+    const blob = await response.blob();
+    
+    // Get file extension
+    let extension = 'mp3';
+    try {
+      const urlParts = song.mediaURL.split('/');
+      const filename = urlParts[urlParts.length - 1].split('?')[0];
+      const ext = filename.split('.').pop();
+      if (ext && ext.match(/[a-z0-9]+/i)) extension = ext;
+    } catch(e) { extension = 'mp3'; }
+    
+    // Clean artist and title for filename
+    const cleanArtist = song.artist.replace(/[^a-zA-Z0-9\s\-]/g, '').trim();
+    const cleanTitle = song.title.replace(/[^a-zA-Z0-9\s\-]/g, '').trim();
+    const downloadName = `${cleanArtist} - ${cleanTitle}.${extension}`;
+    
+    // Create download link with blob
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = downloadName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    // Clean up
+    URL.revokeObjectURL(blobUrl);
+    showToast(`Downloaded: ${downloadName}`);
+  } catch (error) {
+    console.error('Download error:', error);
+    showToast('Download failed. Please try again.');
+  }
 }
 
 function openDetailModal(song) { currentDetailSong = song; detailCover.src = song.coverURL || 'https://via.placeholder.com/200'; detailTitle.innerText = song.title; detailArtist.innerText = song.artist; detailPlays.innerText = `${song.playCount || 0} plays`; detailModal.classList.add('active'); }
@@ -194,7 +210,11 @@ function renderHome() {
 
 function createSongCard(song) { const cover = song.coverURL ? `<img class="cover-img" src="${song.coverURL}" alt="cover">` : `<div class="cover-img" style="display:flex;align-items:center;justify-content:center;background:#2a2e54;"><i class="fas fa-music" style="font-size:2rem;"></i></div>`; return `<div class="song-card" data-id="${song.id}" data-title="${escapeHtml(song.title)}" data-artist="${escapeHtml(song.artist)}" data-cover="${song.coverURL || ''}" data-plays="${song.playCount || 0}" data-mediaurl="${song.mediaURL}" data-mediatype="${song.mediaType}">${cover}<div class="card-info"><div class="song-title">${escapeHtml(song.title)}</div><div class="song-artist">${escapeHtml(song.artist)}</div><div class="card-stats"><span><i class="fas fa-headphones"></i> ${song.playCount || 0}</span><div><button class="watch-btn" data-id="${song.id}"><i class="fas ${song.mediaType === 'audio' ? 'fa-play-circle' : 'fa-video'}"></i> ${song.mediaType === 'audio' ? 'Play' : 'Watch'}</button><button class="download-btn" data-id="${song.id}"><i class="fas fa-download"></i></button></div></div></div></div>`; }
 
-function attachCardEvents() { document.querySelectorAll('.watch-btn').forEach(btn => { btn.onclick = async (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) { await incrementPlayCountIfUnique(id); if (song.mediaType === 'audio') playAudio(song); else openVideoModal(song.mediaURL); } }; }); document.querySelectorAll('.download-btn').forEach(btn => { btn.onclick = (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) downloadSong(song); }; }); document.querySelectorAll('.song-card').forEach(card => { card.onclick = (e) => { if (e.target.classList.contains('watch-btn') || e.target.classList.contains('download-btn') || e.target.closest('.watch-btn') || e.target.closest('.download-btn')) return; const id = card.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) openDetailModal(song); }; }); }
+function attachCardEvents() { 
+  document.querySelectorAll('.watch-btn').forEach(btn => { btn.onclick = async (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) { await incrementPlayCountIfUnique(id); if (song.mediaType === 'audio') playAudio(song); else openVideoModal(song.mediaURL); } }; }); 
+  document.querySelectorAll('.download-btn').forEach(btn => { btn.onclick = (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) downloadSong(song); }; }); 
+  document.querySelectorAll('.song-card').forEach(card => { card.onclick = (e) => { if (e.target.classList.contains('watch-btn') || e.target.classList.contains('download-btn') || e.target.closest('.watch-btn') || e.target.closest('.download-btn')) return; const id = card.getAttribute('data-id'); const song = allSongs.find(s => s.id === id); if (song) openDetailModal(song); }; });
+}
 
 function playAudio(song) { if (currentSongId === song.id && !audioElement.paused) return; currentSongId = song.id; audioElement.src = song.mediaURL; audioElement.load(); audioElement.play(); document.getElementById('globalPlayer').style.display = 'flex'; document.getElementById('playerTrackName').innerText = `${song.title} - ${song.artist}`; updatePlayPauseUI(); audioQueue = allSongs.filter(s => s.mediaType === 'audio').map(s => s.id); audioIndex = audioQueue.findIndex(id => id === song.id); }
 function updatePlayPauseUI() { const btn = document.getElementById('playerPlayPause'); btn.innerHTML = audioElement.paused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>'; }
