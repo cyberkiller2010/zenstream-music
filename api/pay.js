@@ -1,42 +1,25 @@
 export default async function handler(req, res) {
-  // Allow requests from your GitHub Pages site
   const allowedOrigin = 'https://cyberkiller2010.github.io';
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle preflight (OPTIONS) request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // Get phone number and user ID from request body
   const { phoneNumber, userId } = req.body;
   if (!phoneNumber || !userId) {
     return res.status(400).json({ error: 'Phone number and user ID required' });
   }
 
-  // Format phone number to MoneyUnify format (260XXXXXXXXX)
+  // Format phone number
   let formattedPhone = phoneNumber.replace(/\D/g, '');
-  if (formattedPhone.startsWith('0')) {
-    formattedPhone = '260' + formattedPhone.substring(1);
-  }
-  if (!formattedPhone.startsWith('260')) {
-    formattedPhone = '260' + formattedPhone;
-  }
+  if (formattedPhone.startsWith('0')) formattedPhone = '260' + formattedPhone.substring(1);
+  if (!formattedPhone.startsWith('260')) formattedPhone = '260' + formattedPhone;
 
-  // Your MoneyUnify Auth Key
   const AUTH_KEY = '01KTJAC0JCVK34N8789M5NWYJQ';
-  
-  // Generate unique reference
   const reference = `ZS_${userId}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 
-  // Prepare form data (x-www-form-urlencoded, not JSON)
   const params = new URLSearchParams();
   params.append('auth_id', AUTH_KEY);
   params.append('from_payer', formattedPhone);
@@ -56,7 +39,6 @@ export default async function handler(req, res) {
     const data = await response.json();
     console.log('MoneyUnify response:', data);
 
-    // Check if payment was initiated successfully
     if (data.isError === false && data.data?.status === 'initiated') {
       return res.status(200).json({
         success: true,
@@ -64,13 +46,23 @@ export default async function handler(req, res) {
         reference: reference
       });
     } else {
-      // Handle different error types
+      // Extract error message
       let errorMsg = data.message || data.error || 'Payment initiation failed';
-      if (errorMsg.toLowerCase().includes('insufficient')) {
-        errorMsg = 'Insufficient funds in your mobile money wallet. Please add funds and try again.';
-      } else if (errorMsg.toLowerCase().includes('register') || errorMsg.toLowerCase().includes('invalid payer')) {
-        errorMsg = 'This phone number is not registered for mobile money. Please check and try again.';
+      const errorLower = errorMsg.toLowerCase();
+      
+      // Map common errors to user-friendly messages
+      if (errorLower.includes('insufficient') || errorLower.includes('balance') || errorLower.includes('not enough')) {
+        errorMsg = '❌ Insufficient funds in your mobile money wallet. Please add at least 30 ZMW and try again.';
+      } else if (errorLower.includes('register') || errorLower.includes('invalid payer') || errorLower.includes('phone')) {
+        errorMsg = '❌ This phone number is not registered for mobile money. Please check and try again.';
+      } else if (errorLower.includes('pin') || errorLower.includes('authentication')) {
+        errorMsg = '❌ Mobile money PIN authentication failed. Please try again.';
+      } else if (errorLower.includes('timeout') || errorLower.includes('expired')) {
+        errorMsg = '❌ Payment request timed out. Please try again and approve within 60 seconds.';
+      } else {
+        errorMsg = `❌ ${errorMsg}`;
       }
+      
       return res.status(400).json({ success: false, error: errorMsg });
     }
   } catch (error) {
