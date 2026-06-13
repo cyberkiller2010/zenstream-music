@@ -70,7 +70,7 @@
       <p><strong>Review &amp; Payment</strong></p>
       <div id="reviewDetails" class="review-details"></div>
       <div id="paymentStatus" style="font-size:0.85rem; margin:10px 0; padding:8px; background:#1e213f; border-radius:1rem; display:none;"></div>
-      <button id="initiatePaymentBtn" class="btn-primary"><i class="fas fa-credit-card"></i> Pay 30 ZMW (MTN/Airtel)</button>
+      <button id="initiatePaymentBtn" class="btn-primary"><i class="fas fa-credit-card"></i> Pay 30 ZMW (Test Mode)</button>
       <button id="confirmUploadBtn" class="btn-primary" style="background:#28a745; margin-top:0.5rem; display:none;"><i class="fas fa-cloud-upload-alt"></i> Confirm Payment & Upload</button>
       <button id="cancelUploadBtn" class="btn-primary" style="background:#3a2f54; margin-left:.5rem;">Cancel</button>
     </div>
@@ -198,55 +198,26 @@ document.getElementById('continueNoCoverBtn').onclick = () => { currentWizardDat
 document.getElementById('continueWithCoverBtn').onclick = () => { if(currentWizardData.coverFile) goToReview(); };
 function goToReview() { document.getElementById('step3').classList.remove('active-step'); document.getElementById('step4').classList.add('active-step'); document.getElementById('step3').style.display = 'none'; document.getElementById('step4').style.display = 'block'; const reviewDiv = document.getElementById('reviewDetails'); let coverHtml = currentWizardData.coverFile ? `<img class="cover-preview" src="${URL.createObjectURL(currentWizardData.coverFile)}">` : '<div style="width:50px;height:50px;background:#2a2e54;"></div>'; reviewDiv.innerHTML = `<div><strong>Artist:</strong> ${escapeHtml(currentWizardData.artist)}</div><div><strong>Title:</strong> ${escapeHtml(currentWizardData.title)}</div><div><strong>Type:</strong> ${currentWizardData.mediaType}</div><div><strong>File:</strong> ${escapeHtml(currentWizardData.mediaFile.name)}</div><div><strong>Cover:</strong> ${currentWizardData.coverFile ? currentWizardData.coverFile.name : 'None'}</div><div>${coverHtml}</div>`; document.getElementById('initiatePaymentBtn').style.display = 'block'; document.getElementById('confirmUploadBtn').style.display = 'none'; document.getElementById('paymentStatus').style.display = 'none'; }
 
+// SIMPLIFIED TEST MODE - No phone number required
 async function initiatePayment() {
   if (!currentUser) { showToast('Please sign in first.'); return; }
-  const phone = prompt('Enter your MTN/Airtel phone number (e.g., 0977XXXXXX) or enter TEST123 for test mode:');
-  if (!phone) { showToast('Phone number required.'); return; }
   
-  // Allow TEST123 as test mode bypass
-  if (phone === 'TEST123') {
-    showToast('Test mode activated. No payment will be deducted.');
-    try {
-      const response = await fetch('https://zenstream-music.vercel.app/api/pay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: phone, userId: currentUser.uid })
-      });
-      const result = await response.json();
-      if (result.success) {
-        currentPaymentTransactionId = result.transaction_id;
-        document.getElementById('paymentStatus').innerHTML = `<i class="fas fa-check-circle"></i> Test mode: Payment bypassed. Click "Confirm Payment & Upload" to continue.`;
-        document.getElementById('paymentStatus').style.display = 'block';
-        document.getElementById('initiatePaymentBtn').style.display = 'none';
-        document.getElementById('confirmUploadBtn').style.display = 'block';
-      } else {
-        showToast(result.error || 'Test mode failed.');
-      }
-    } catch (err) {
-      showToast('Network error: ' + err.message);
-    }
-    return;
-  }
-  
-  // Normal phone number validation
-  if (phone.length < 9) { showToast('Valid phone number required (minimum 9 digits).'); return; }
-  
-  showToast('Requesting payment...');
+  showToast('Test mode: Processing...');
   try {
     const response = await fetch('https://zenstream-music.vercel.app/api/pay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phoneNumber: phone, userId: currentUser.uid })
+      body: JSON.stringify({ phoneNumber: 'TEST123', userId: currentUser.uid })
     });
     const result = await response.json();
     if (result.success) {
       currentPaymentTransactionId = result.transaction_id;
-      document.getElementById('paymentStatus').innerHTML = `<i class="fas fa-check-circle"></i> Payment request sent! Please approve on your phone, then click "Confirm Payment & Upload".`;
+      document.getElementById('paymentStatus').innerHTML = `<i class="fas fa-check-circle"></i> Test mode active. Click "Confirm Payment & Upload" to continue.`;
       document.getElementById('paymentStatus').style.display = 'block';
       document.getElementById('initiatePaymentBtn').style.display = 'none';
       document.getElementById('confirmUploadBtn').style.display = 'block';
     } else {
-      showToast(result.error || 'Payment initiation failed. Please try again.');
+      showToast(result.error || 'Test mode failed.');
     }
   } catch (err) {
     showToast('Network error: ' + err.message);
@@ -282,7 +253,7 @@ async function confirmAndUpload() {
         setTimeout(() => { progressContainer.style.display = 'none'; showToast('Upload complete! Thank you.'); resetWizard(); document.getElementById('step4').style.display = 'none'; document.getElementById('step1').style.display = 'block'; }, 500);
       } catch (err) { clearInterval(interval); progressContainer.style.display = 'none'; showToast('Upload failed: ' + err.message); }
     } else {
-      showToast('Payment not confirmed yet. Please approve on your phone and try again.');
+      showToast('Payment not confirmed yet. Please try again.');
     }
   } catch (err) { showToast('Verification error: ' + err.message); }
 }
