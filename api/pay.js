@@ -12,6 +12,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Phone number and user ID required' });
   }
 
+  // TEST MODE: If phone number is "TEST123", bypass payment
+  if (phoneNumber === 'TEST123') {
+    return res.status(200).json({
+      success: true,
+      transaction_id: `TEST_${userId}_${Date.now()}`,
+      reference: `TEST_${userId}_${Date.now()}`,
+      testMode: true
+    });
+  }
+
   // Format phone number
   let formattedPhone = phoneNumber.replace(/\D/g, '');
   if (formattedPhone.startsWith('0')) formattedPhone = '260' + formattedPhone.substring(1);
@@ -46,19 +56,13 @@ export default async function handler(req, res) {
         reference: reference
       });
     } else {
-      // Extract error message
       let errorMsg = data.message || data.error || 'Payment initiation failed';
       const errorLower = errorMsg.toLowerCase();
       
-      // Map common errors to user-friendly messages
       if (errorLower.includes('insufficient') || errorLower.includes('balance') || errorLower.includes('not enough')) {
         errorMsg = '❌ Insufficient funds in your mobile money wallet. Please add at least 30 ZMW and try again.';
       } else if (errorLower.includes('register') || errorLower.includes('invalid payer') || errorLower.includes('phone')) {
         errorMsg = '❌ This phone number is not registered for mobile money. Please check and try again.';
-      } else if (errorLower.includes('pin') || errorLower.includes('authentication')) {
-        errorMsg = '❌ Mobile money PIN authentication failed. Please try again.';
-      } else if (errorLower.includes('timeout') || errorLower.includes('expired')) {
-        errorMsg = '❌ Payment request timed out. Please try again and approve within 60 seconds.';
       } else {
         errorMsg = `❌ ${errorMsg}`;
       }
